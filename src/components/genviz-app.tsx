@@ -87,6 +87,9 @@ export default function GenVizApp() {
 
     const formData = new FormData();
     formData.append("file", file);
+    if (dbUrl) {
+      formData.append("customDatabaseUrl", dbUrl);
+    }
 
     try {
       const res = await fetch("/api/upload", {
@@ -197,11 +200,6 @@ export default function GenVizApp() {
           className="w-0 h-0 absolute opacity-0 pointer-events-none"
           tabIndex={-1}
           onChange={(e) => {
-            if (dbUrl) {
-               setError("⚠️ You are currently connected to a Custom Database (PostgreSQL). Please click the Database icon and CLEAR your connection before uploading a local CSV.");
-               if (fileInputRef.current) fileInputRef.current.value = "";
-               return;
-            }
             if (e.target.files && e.target.files.length > 0) {
               handleFileUpload(e);
             }
