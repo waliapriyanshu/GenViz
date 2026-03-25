@@ -21,17 +21,29 @@ export async function POST(req: Request) {
       if (customDatabaseUrl) {
         activeSchemaContext = await getPostgresSchema(customDatabaseUrl);
       } else {
-        const tables: any = await prisma.$queryRawUnsafe("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_prisma_migrations'");
-        let schemaBlock = "";
+        const tables: any = await prisma.$queryRawUnsafe(`
+          SELECT 
+            table_name as "tableName", 
+            column_name as "columnName", 
+            data_type as "dataType"
+          FROM information_schema.columns 
+          WHERE table_schema = 'public' 
+          AND table_name NOT LIKE 'pg_%' 
+          AND table_name NOT LIKE '_prisma_%'
+        `);
+
+        const schemaMap: Record<string, string[]> = {};
         for (const t of tables) {
-          const columns: any = await prisma.$queryRawUnsafe(`PRAGMA table_info(${t.name})`);
-          schemaBlock += `Table Name: ${t.name}\nColumns:\n`;
-          for (const col of columns) {
-            schemaBlock += `- ${col.name} (${col.type})\n`;
-          }
-          schemaBlock += "\n";
+          if (!schemaMap[t.tableName]) schemaMap[t.tableName] = [];
+          schemaMap[t.tableName].push(`${t.columnName} (${t.dataType})`);
         }
-        activeSchemaContext = schemaBlock || "Table Name: Data\nAny normal columns expected in a generic dataset.";
+
+        let schemaBlock = "";
+        for (const [tableName, cols] of Object.entries(schemaMap)) {
+          schemaBlock += `Table Name: ${tableName}\nColumns:\n- ${cols.join("\n- ")}\n\n`;
+        }
+
+        activeSchemaContext = schemaBlock || "Table Name: Data\nProduct, Category, Revenue, Quantity, Region.";
       }
     } catch(schemaErr: any) {
       console.warn("Could not dynamically resolve schema", schemaErr);

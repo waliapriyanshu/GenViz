@@ -16,9 +16,19 @@ export async function POST(req: Request) {
     }
 
     const text = await file.text();
-    const result = Papa.parse(text, { header: true, skipEmptyLines: true });
-    const data = result.data as Record<string, any>[];
-    const headers = result.meta.fields || [];
+    const result = Papa.parse(text, { 
+      header: true, 
+      skipEmptyLines: true,
+      transformHeader: (h) => h.trim(),
+    });
+    const data = (result.data as Record<string, any>[]).map(row => {
+      const trimmedRow: any = {};
+      for (const key in row) {
+        trimmedRow[key] = typeof row[key] === 'string' ? row[key].trim() : row[key];
+      }
+      return trimmedRow;
+    });
+    const headers = (result.meta.fields || []).map(h => h.trim());
 
     if (headers.length === 0 || data.length === 0) {
       return NextResponse.json({ error: 'Valid CSV with headers and data required' }, { status: 400 });
@@ -36,22 +46,22 @@ export async function POST(req: Request) {
       if (firstVal && !isNaN(Number(firstVal))) {
         type = 'NUMERIC';
       }
-      return `${col} ${type}`;
+      return `"${col}" ${type}`; // Quote column names too
     });
 
-    const insertCols = safeHeaders.join(', ');
+    const insertCols = safeHeaders.map(h => `"${h}"`).join(', ');
     let rowsInserted = 0;
 
     // --- POSTGRES ENGINE (Vercel Production Compatible) ---
     if (customDbUrl) {
       const pool = new Pool({ connectionString: customDbUrl });
       
-      await pool.query(`DROP TABLE IF EXISTS ${tableName}`);
-      const createStmt = `CREATE TABLE ${tableName} (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
+      await pool.query(`DROP TABLE IF EXISTS "${tableName}"`);
+      const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
       await pool.query(createStmt);
 
       const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
-      const insertQuery = `INSERT INTO ${tableName} (${insertCols}) VALUES (${placeholders})`;
+      const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
 
       for (const row of data) {
         const values = headers.map(h => {
@@ -72,19 +82,19 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ 
         success: true, 
-        message: `Created remote Postgres table and inserted ${rowsInserted} rows.`,
-        schema: columns
+        message: `Created remote Postgres table "${tableName}" and inserted ${rowsInserted} rows.`,
+        tableName,
+        rows: rowsInserted
       });
     }
 
-    // --- SQLITE ENGINE (Local Sandbox Only) ---
-    // Note: This will naturally fail on Vercel Serverless due to read-only filesystem restrictions.
-    await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS ${tableName}`);
-    const createStmt = `CREATE TABLE ${tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, ${columns.join(', ')})`;
+    // --- GLOBAL POSTGRES ENGINE (via Prisma Default) ---
+    await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS "${tableName}"`);
+    const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
     await prisma.$executeRawUnsafe(createStmt);
 
-    const placeholders = safeHeaders.map(() => '?').join(', ');
-    const insertQuery = `INSERT INTO ${tableName} (${insertCols}) VALUES (${placeholders})`;
+    const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
+    const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
     
     for (const row of data) {
       const values = headers.map(h => {
@@ -98,14 +108,15 @@ export async function POST(req: Request) {
         await prisma.$executeRawUnsafe(insertQuery, ...values);
         rowsInserted++;
       } catch (err) {
-        console.error("SQLite Row insert failure:", err);
+        console.error("Prisma Postgres Row insert failure:", err);
       }
     }
 
     return NextResponse.json({ 
       success: true, 
-      message: `Created local SQLite table and inserted ${rowsInserted} rows.`,
-      schema: columns
+      message: `Created global Postgres table "${tableName}" and inserted ${rowsInserted} rows.`,
+      tableName,
+      rows: rowsInserted
     });
 
   } catch (err: any) {

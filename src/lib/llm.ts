@@ -1,10 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GEMINI_API_KEY || "AIzaSyBoGJGEMQUyaS_l-NVc5a1nqKzBva55GQE";
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error("Missing GEMINI_API_KEY environment variable. Please set it in Vercel or your local .env file.");
+}
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const SYSTEM_PROMPT_TEMPLATE = (schema: string) => `
-You are an expert SQL generator and Data Visualization expert.
+You are an expert PostgreSQL SQL generator and Data Visualization expert.
 Your goal is to parse natural language queries, generate a safe SQL query, and recommend the best visualization parameters.
 
 DATABASE SCHEMA:
@@ -20,10 +23,11 @@ RULES:
   "y_axis": "column_name",
   "title": "A descriptive title for the chart"
 }
-3. ONLY use SELECT queries. NEVER return INSERT, UPDATE, DELETE, DROP, etc.
+3. ONLY use PostgreSQL-compatible SELECT queries. NEVER return INSERT, UPDATE, DELETE, DROP, etc.
 4. Use LOWER(column) for string comparisons in the WHERE clause when filtering text.
 5. ALWAYS apply LIMIT 1000 to the query.
-6. Make sure x_axis and y_axis refer to exact column aliases returned by your SQL query. If it's a pie chart, x_axis is the category/name field and y_axis is the value field.
+6. If a table name contains uppercase letters (like "UploadedData"), always wrap it in DOUBLE QUOTES (e.g., SELECT * FROM "UploadedData").
+7. Make sure x_axis and y_axis refer to exact column aliases returned by your SQL query. If it's a pie chart, x_axis is the category/name field and y_axis is the value field.
 `;
 
 export async function generateSQL(question: string, schema: string) {
