@@ -131,7 +131,8 @@ export default function GenVizApp() {
       
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch");
+        const fullErr = data.details ? `${data.error}\n\nDetails: ${data.details}` : (data.error || "Failed to fetch");
+        throw new Error(fullErr);
       }
       
       setResult(data);
@@ -250,7 +251,7 @@ export default function GenVizApp() {
       )}
 
       {error && (
-        <div className="p-4 bg-destructive/10 text-destructive rounded-xl border border-destructive/20">
+        <div className="p-4 bg-destructive/10 text-destructive rounded-xl border border-destructive/20 whitespace-pre-wrap">
           <strong>Error: </strong> {error}
         </div>
       )}

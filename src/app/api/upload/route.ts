@@ -40,13 +40,22 @@ export async function POST(req: Request) {
     );
 
     const tableName = 'UploadedData';
+    // Robust type inference: check first 50 rows
     const columns = safeHeaders.map((col, idx) => {
-      const firstVal = data[0][headers[idx]];
-      let type = 'TEXT';
-      if (firstVal && !isNaN(Number(firstVal))) {
-        type = 'NUMERIC';
+      let isNumeric = true;
+      const sampleSize = Math.min(data.length, 50);
+      
+      for (let i = 0; i < sampleSize; i++) {
+        const val = String(data[i][headers[idx]] || "").replace(/[$,]/g, "").trim();
+        if (val && isNaN(Number(val))) {
+          isNumeric = false;
+          break;
+        }
+        // If sample is just empty strings, don't assume numeric yet
       }
-      return `"${col}" ${type}`; // Quote column names too
+      
+      const type = isNumeric && data.some(d => d[headers[idx]] !== "") ? 'NUMERIC' : 'TEXT';
+      return `"${col}" ${type}`;
     });
 
     const insertCols = safeHeaders.map(h => `"${h}"`).join(', ');
@@ -56,29 +65,31 @@ export async function POST(req: Request) {
     if (customDbUrl) {
       const pool = new Pool({ connectionString: customDbUrl });
       
-      await pool.query(`DROP TABLE IF EXISTS "${tableName}"`);
-      const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
-      await pool.query(createStmt);
+      try {
+        await pool.query(`DROP TABLE IF EXISTS "${tableName}"`);
+        const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
+        await pool.query(createStmt);
 
-      const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
-      const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
+        const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
+        const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
 
-      for (const row of data) {
-        const values = headers.map(h => {
-          const val = row[h];
-          if (val === undefined || val === null || val === '') return null;
-          if (!isNaN(Number(val))) return Number(val);
-          return val.toString();
-        });
-        
-        try {
+        for (const row of data) {
+          const values = headers.map(h => {
+            const val = String(row[h] || "").replace(/[$,]/m, "").trim();
+            if (val === '') return null;
+            if (!isNaN(Number(val)) && val !== '') return Number(val);
+            return row[h];
+          });
+          
           await pool.query(insertQuery, values);
           rowsInserted++;
-        } catch (err) {
-          console.error("PG Row insert failure:", err);
         }
+      } catch (err: any) {
+        console.error("PG Processing failure:", err);
+        return NextResponse.json({ error: 'Database processing failed', details: err.message }, { status: 500 });
+      } finally {
+        await pool.end();
       }
-      await pool.end();
 
       return NextResponse.json({ 
         success: true, 
@@ -89,34 +100,36 @@ export async function POST(req: Request) {
     }
 
     // --- GLOBAL POSTGRES ENGINE (via Prisma Default) ---
-    await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS "${tableName}"`);
-    const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
-    await prisma.$executeRawUnsafe(createStmt);
+    try {
+      await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS "${tableName}"`);
+      const createStmt = `CREATE TABLE "${tableName}" (id SERIAL PRIMARY KEY, ${columns.join(', ')})`;
+      await prisma.$executeRawUnsafe(createStmt);
 
-    const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
-    const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
-    
-    for (const row of data) {
-      const values = headers.map(h => {
-        const val = row[h];
-        if (val === undefined || val === null || val === '') return null;
-        if (!isNaN(Number(val))) return Number(val);
-        return val.toString();
-      });
+      const placeholders = safeHeaders.map((_, i) => `$${i + 1}`).join(', ');
+      const insertQuery = `INSERT INTO "${tableName}" (${insertCols}) VALUES (${placeholders})`;
       
-      try {
+      for (const row of data) {
+        const values = headers.map(h => {
+          const val = String(row[h] || "").replace(/[$,]/m, "").trim();
+          if (val === '') return null;
+          if (!isNaN(Number(val)) && val !== '') return Number(val);
+          return row[h];
+        });
+        
         await prisma.$executeRawUnsafe(insertQuery, ...values);
         rowsInserted++;
-      } catch (err) {
-        console.error("Prisma Postgres Row insert failure:", err);
       }
+    } catch (err: any) {
+      console.error("Prisma Processing failure:", err);
+      return NextResponse.json({ error: 'Database processing failed', details: err.message }, { status: 500 });
     }
 
     return NextResponse.json({ 
       success: true, 
       message: `Created global Postgres table "${tableName}" and inserted ${rowsInserted} rows.`,
       tableName,
-      rows: rowsInserted
+      rows: rowsInserted,
+      schema: columns
     });
 
   } catch (err: any) {

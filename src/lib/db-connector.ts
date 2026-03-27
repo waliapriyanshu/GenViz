@@ -6,15 +6,19 @@ export async function getPostgresSchema(connectionString: string): Promise<strin
     const res = await pool.query(`
       SELECT table_name, column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_schema = 'public'
+      WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
     `);
     
     const tables: Record<string, string[]> = {};
     for (const row of res.rows) {
-      if (!tables[row.table_name]) {
-        tables[row.table_name] = [];
+      const tName = row.table_name || row.tableName;
+      const cName = row.column_name || row.columnName;
+      const dType = row.data_type || row.dataType;
+      
+      if (!tables[tName]) {
+        tables[tName] = [];
       }
-      tables[row.table_name].push(`- ${row.column_name} (${row.data_type})`);
+      tables[tName].push(`- ${cName} (${dType})`);
     }
 
     let schemaBlock = "";
