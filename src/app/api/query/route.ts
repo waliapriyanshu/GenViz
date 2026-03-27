@@ -23,27 +23,30 @@ export async function POST(req: Request) {
       } else {
         const tables: any = await prisma.$queryRawUnsafe(`
           SELECT 
-            table_name as "tableName", 
-            column_name as "columnName", 
-            data_type as "dataType"
+            table_name, 
+            column_name, 
+            data_type
           FROM information_schema.columns 
-          WHERE table_schema = 'public' 
-          AND table_name NOT LIKE 'pg_%' 
+          WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
           AND table_name NOT LIKE '_prisma_%'
         `);
 
         const schemaMap: Record<string, string[]> = {};
         for (const t of tables) {
-          if (!schemaMap[t.tableName]) schemaMap[t.tableName] = [];
-          schemaMap[t.tableName].push(`${t.columnName} (${t.dataType})`);
+          const tName = t.table_name || t.tableName; // handle both cases
+          const cName = t.column_name || t.columnName;
+          const dType = t.data_type || t.dataType;
+          
+          if (!schemaMap[tName]) schemaMap[tName] = [];
+          schemaMap[tName].push(`${cName} (${dType})`);
         }
 
         let schemaBlock = "";
         for (const [tableName, cols] of Object.entries(schemaMap)) {
-          schemaBlock += `Table Name: ${tableName}\nColumns:\n- ${cols.join("\n- ")}\n\n`;
+          schemaBlock += `Table Name: "${tableName}"\nColumns:\n- ${cols.join("\n- ")}\n\n`;
         }
 
-        activeSchemaContext = schemaBlock || "Table Name: Data\nProduct, Category, Revenue, Quantity, Region.";
+        activeSchemaContext = schemaBlock || "ERROR: NO DATA AVAILABLE. Tell the user to upload a CSV file or connect a database first.";
       }
     } catch(schemaErr: any) {
       console.warn("Could not dynamically resolve schema", schemaErr);
