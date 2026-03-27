@@ -10,7 +10,7 @@ GenViz Analytics is an AI-powered conversational data dashboard. Simply ask ques
 3. **Database Layer**: Dual-architecture supporting both local SQLite (via Prisma) and remote PostgreSQL (`pg`).
 4. **Data Visualization**: VChart mapped automatically to `bar`, `line`, `pie`, `area`, `scatter`, or `table`.
 
-### ✨ New: Bring Your Own Data
+### Bring Your Own Data
 1. **Upload CSVs**: Instantly upload any `.csv` file directly from the dashboard. The system will automatically parse and ingest it into a local SQLite table, exposing it to Gemini's SQL generator.
 2. **Connect Remote Databases**: Click the `Database` icon on the dashboard to enter a PostgreSQL connection string (e.g. `postgresql://user:pass@localhost:5432/db`). Your queries will seamlessly switch from local CSVs to querying your live production schemas!
 
