@@ -2,27 +2,20 @@
 
 **The ultimate conversational data visualization platform.** 
 GenViz AI transforms your natural language questions into stunning, interactive VisActor charts using Google's Gemini 2.5 Flash and PostgreSQL.
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Next.js 15](https://img.shields.io/badge/Next.js-15-black)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791)
+## Key Features
+
+- **Conversational BI**: Ask "Compare quarterly revenue between iPhone and MacBook" and get an instant Bar Chart.
+- **Voice Commands**: Native speech-to-text integration for hands-free data analysis.
+- **Instant CSV Ingestion**: Drag-and-drop any CSV. The system dynamically infers types, creates tables, and batches data into your database.
+- **Universal Connectors**: One-click connection to any remote PostgreSQL database (Neon, Supabase, RDS, etc.).
+- **Dynamic Charting**: Automatically maps query results into Bar, Line, Pie, Area, Scatter, or Interactive Tables using `@visactor/vchart`.
+- **Vercel Optimized**: Built with Next.js App Router for serverless efficiency and edge-ready API routes.
 
 ---
 
-## 🔥 Key Features
-
-- 👄 **Conversational BI**: Ask "Compare quarterly revenue between iPhone and MacBook" and get an instant Bar Chart.
-- 🎙️ **Voice Commands**: Native speech-to-text integration for hands-free data analysis.
-- 📁 **Instant CSV Ingestion**: Drag-and-drop any CSV. The system dynamically infers types, creates tables, and batches data into your database.
-- 🔌 **Universal Connectors**: One-click connection to any remote PostgreSQL database (Neon, Supabase, RDS, etc.).
-- 🎭 **Dynamic Charting**: Automatically maps query results into Bar, Line, Pie, Area, Scatter, or Interactive Tables using `@visactor/vchart`.
-- ⚡ **Vercel Optimized**: Built with Next.js App Router for serverless efficiency and edge-ready API routes.
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 GenViz follows a modern decoupled data architecture:
 
@@ -35,7 +28,7 @@ GenViz follows a modern decoupled data architecture:
 
 ---
 
-## 🚦 Quick Start
+## Quick Start
 
 ### 1. Clone & Install
 ```bash
@@ -75,20 +68,8 @@ GenViz was specifically engineered for Vercel's Serverless architecture.
 
 ---
 
-## 🔒 Security First
+## Security First
 
 - **Read-Only Guards**: The system strictly validates generated SQL to prevent `DROP`, `DELETE`, `UPDATE`, or `INSERT` operations.
 - **Identifier Scoping**: All table and column names are sanitized and double-quoted to prevent SQL injection and handle PostgreSQL case-sensitivity.
 - **Environment Isolation**: API keys are never exposed to the client; all LLM operations happen in secure Serverless Functions.
-
----
-
-## 📜 Acknowledgments
-
-- **VisActor Team**: For the incredible `@visactor/vchart` charting engine.
-- **Google GenAI**: For the Gemini 2.5 Flash capabilities.
-- **Created with ❤️ by Priyanshu**
-
----
-
-*For any updates, please check the [Walkthrough](./walkthrough.md) of the implementation phase.*
