@@ -1,17 +1,94 @@
+// Genviz application metadata. Everything lives in the `genviz` schema so that
+// `prisma db push` never touches other schemas in the same database (e.g. the
+// legacy `public."Data"` / `public."UploadedData"` tables). Uploaded CSV data is
+// stored separately in the `genviz_data` schema (created at runtime).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["genviz"]
 }
 
-generator client {
-  provider = "prisma-client-js"
+/// A data source owned by one browser session: an uploaded CSV or a PostgreSQL connection.
+model Source {
+  id            String         @id @default(uuid()) @db.Uuid
+  ownerId       String         @map("owner_id")
+  kind          String // "csv" | "postgres"
+  name          String
+  /// csv: physical table name inside the genviz_data schema
+  tableName     String?        @map("table_name")
+  /// postgres: AES-256-GCM encrypted connection string (never sent to the browser)
+  encryptedUrl  String?        @map("encrypted_url")
+  /// csv: columns/profile/suggestions; postgres: database label, schema snapshot
+  details       Json
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  conversations Conversation[]
+
+  @@index([ownerId])
+  @@map("sources")
+  @@schema("genviz")
 }
 
-model Data {
-  id       Int    @id @default(autoincrement())
-  product  String
-  category String
-  revenue  Int
-  quantity Int
-  region   String
+model Conversation {
+  id        String    @id @default(uuid()) @db.Uuid
+  ownerId   String    @map("owner_id")
+  sourceId  String?   @map("source_id") @db.Uuid
+  source    Source?   @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  title     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  messages  Message[]
+
+  @@index([ownerId])
+  @@map("conversations")
+  @@schema("genviz")
+}
+
+model Message {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // "user" | "assistant"
+  content        String
+  /// assistant: structured result (answer, visualization, table, metadata, follow-up context)
+  payload        Json?
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+  @@schema("genviz")
+}
+
+/// Cooldown keys (per session, per IP, per AI provider).
+model RateLimit {
+  key           String   @id
+  nextAllowedAt DateTime @map("next_allowed_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+
+  @@map("rate_limits")
+  @@schema("genviz")
+}
+
+/// Audit log of every query Genviz attempted on a data source.
+model QueryRun {
+  id             String   @id @default(uuid()) @db.Uuid
+  ownerId        String   @map("owner_id")
+  sourceId       String   @map("source_id") @db.Uuid
+  conversationId String?  @map("conversation_id") @db.Uuid
+  sql            String
+  status         String // "ok" | "rejected" | "error"
+  rowCount       Int?     @map("row_count")
+  durationMs     Int?     @map("duration_ms")
+  error          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([ownerId, createdAt])
+  @@map("query_runs")
+  @@schema("genviz")
 }
