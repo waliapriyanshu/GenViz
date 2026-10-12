@@ -17,7 +17,12 @@ import { ProgressSteps } from "@/components/genviz/progress-steps";
 import { SourceCard, sourceLabel } from "@/components/genviz/source-card";
 import { SourcePanel, uploadCsvFile } from "@/components/genviz/source-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ApiError, apiJson, streamNdjson } from "@/lib/client/api";
+import {
+  ApiError,
+  apiJson,
+  apiJsonWithRetry,
+  streamNdjson,
+} from "@/lib/client/api";
 import type { ChatMessage, ClientSource } from "@/lib/client/types";
 import type {
   AssistantPayload,
@@ -86,7 +91,7 @@ export default function GenvizApp() {
     (async () => {
       try {
         const [{ sources: list }, limit] = await Promise.all([
-          apiJson<{ sources: ClientSource[] }>("/api/sources"),
+          apiJsonWithRetry<{ sources: ClientSource[] }>("/api/sources"),
           apiJson<{ retryAfterSeconds: number }>("/api/rate-limit").catch(
             () => ({ retryAfterSeconds: 0 }),
           ),
