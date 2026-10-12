@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "@/style/globals.css";
 import { Providers } from "./providers";
@@ -13,10 +13,6 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-plex-mono",
-});
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-newsreader",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +36,6 @@ export default function RootLayout({
           "bg-background font-sans antialiased",
           plexSans.variable,
           plexMono.variable,
-          newsreader.variable,
         )}
       >
         <Providers>{children}</Providers>

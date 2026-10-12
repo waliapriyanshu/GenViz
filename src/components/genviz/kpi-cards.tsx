@@ -12,7 +12,7 @@ export function KpiCards({ viz }: { viz: Visualization }) {
           <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             {item.label}
           </div>
-          <div className="mt-1 font-serif text-4xl font-medium tabular-nums">
+          <div className="mt-1 text-4xl font-medium tabular-nums tracking-tight">
             {formatNumber(item.value, {
               currency:
                 item.unit === "currency" ? viz.config.currency : undefined,

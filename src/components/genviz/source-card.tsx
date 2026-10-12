@@ -47,7 +47,7 @@ export function SourceCard({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate font-serif text-lg font-medium leading-tight">
+          <div className="truncate text-lg font-medium leading-tight">
             {source.kind === "csv" ? source.fileName : source.database}
           </div>
           <div className="text-sm text-muted-foreground">
@@ -140,7 +140,7 @@ export function SourceCard({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(suggestion)}
-                className="rounded-md border bg-background px-3 py-1.5 text-sm hover:border-primary/60 hover:text-primary disabled:opacity-50"
+                className="rounded-md border bg-background px-3 py-1.5 text-sm hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
               >
                 {suggestion}
               </button>
