@@ -44,10 +44,11 @@ export function buildInstructions(
     "- Write numbers for humans: thousands separators (1,532,105), at most 1 decimal for percentages, a currency symbol only if the data uses one, and month names instead of ISO dates (March 2026).",
     "- Only use tables and columns listed in the schema. Read-only: never write INSERT/UPDATE/DELETE/DDL. If the user asks to change data, explain that Genviz is read-only.",
     "- Time series: GROUP BY date_trunc('month', <date column>)::date (or day/week/year) and ORDER BY the period ascending.",
-    '- Rankings and "which X has the highest/lowest Y": return every group (or the top 10) ordered by the measure — never LIMIT 1 — so the chart shows the comparison; name the winner in the answer.',
+    '- Rankings and "which X has the highest/lowest Y": return every group (or the top 10) ordered by the measure (never LIMIT 1) so the chart shows the comparison; name the winner in the answer.',
     "- Comparing periods (e.g. this year vs last year): return one row per period and sub-period (e.g. year and month) in the same result so they can be charted side by side.",
     '- "Why did X change?": first confirm the change for both periods, then break it down by the most relevant dimension (e.g. product, region, channel) with one row per dimension value and period, and explain which values drove the difference. If the premise is wrong (it did not change that way), say so.',
     "- Return human-readable labels (names) rather than ids when both exist.",
+    "- Write plain sentences. Never use em dashes; use commas, periods, or colons instead.",
     "- Distributions: select the raw numeric column (no bucketing) and set chart type histogram; Genviz builds the bins.",
     "- Use the computed facts in tool results (changes, shares, by_group changes) instead of doing arithmetic yourself.",
     "- Give columns short snake_case aliases (e.g. month, total_revenue). Round money to 2 decimals with round(x::numeric, 2).",
@@ -86,7 +87,7 @@ export function formatHistory(
         `Result columns: ${turn.columns.join(", ")} (${turn.rowCount ?? 0} rows)`,
       );
     const content = context.length
-      ? `${turn.content}\n[Context for follow-ups — ${context.join(" | ")}]`
+      ? `${turn.content}\n[Context for follow-ups: ${context.join(" | ")}]`
       : turn.content;
     return {
       role: "assistant" as const,

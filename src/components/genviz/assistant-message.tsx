@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { DataTable } from "@/components/genviz/data-table";
 import { KpiCards } from "@/components/genviz/kpi-cards";
+import { stripEmDashes } from "@/lib/text";
 import type { AssistantPayload } from "@/lib/viz/types";
 
 // VChart is large: load it only when the first chart is rendered.
@@ -58,14 +59,14 @@ export function AssistantMessage({
               aria-hidden
             />
           )}
-          <p>{payload.answer}</p>
+          <p>{stripEmDashes(payload.answer)}</p>
         </div>
 
         {hasChart && (
           <div className="rounded-xl border bg-card p-4 shadow-sm">
             {viz.title && (
               <div className="mb-2 text-sm font-medium text-muted-foreground">
-                {viz.title}
+                {stripEmDashes(viz.title)}
               </div>
             )}
             {viz.type === "kpi" ? (
@@ -76,7 +77,7 @@ export function AssistantMessage({
             {viz.notes.length > 0 && (
               <div className="mt-2 flex items-start gap-1.5 text-xs text-muted-foreground">
                 <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-                <span>{viz.notes.join(" ")}</span>
+                <span>{stripEmDashes(viz.notes.join(" "))}</span>
               </div>
             )}
           </div>
@@ -121,7 +122,7 @@ export function AssistantMessage({
                 ) : (
                   <Database className="h-3.5 w-3.5" />
                 )}
-                {meta.source}
+                {stripEmDashes(meta.source)}
               </span>
               <span>
                 {meta.rowCount.toLocaleString()} result row
@@ -133,7 +134,7 @@ export function AssistantMessage({
             {meta.steps.length > 0 && (
               <ol className="list-decimal space-y-0.5 pl-5">
                 {meta.steps.map((step, i) => (
-                  <li key={i}>{step}</li>
+                  <li key={i}>{stripEmDashes(step)}</li>
                 ))}
               </ol>
             )}
@@ -157,10 +158,10 @@ export function AssistantMessage({
                 key={suggestion}
                 type="button"
                 disabled={disabled}
-                onClick={() => onAsk(suggestion)}
+                onClick={() => onAsk(stripEmDashes(suggestion))}
                 className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground hover:bg-secondary/70 disabled:opacity-50"
               >
-                {suggestion}
+                {stripEmDashes(suggestion)}
               </button>
             ))}
           </div>

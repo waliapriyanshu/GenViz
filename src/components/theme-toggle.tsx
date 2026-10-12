@@ -43,7 +43,7 @@ export function ThemeToggle() {
 
 function AutoThemeBadge() {
   return (
-    <span className="absolute -right-2 -top-2 flex h-4 items-center rounded-full bg-secondary px-1.5 text-[0.6rem] text-secondary-foreground ring-2 ring-background duration-300 animate-in zoom-in-50">
+    <span className="absolute -bottom-1.5 -right-1.5 flex h-4 items-center rounded-full bg-secondary px-1.5 text-[0.6rem] text-secondary-foreground ring-2 ring-background duration-300 animate-in zoom-in-50">
       auto
     </span>
   );
