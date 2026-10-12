@@ -66,3 +66,7 @@ Notes:
 - Rotate any database credential that was ever committed (the old `.env` was tracked in git history).
 - Use a read-only database user when connecting a database; Genviz warns if the user can write.
 - `GENVIZ_ENCRYPTION_KEY` protects stored connection strings; changing it makes existing connections unreadable (users reconnect).
+
+## Third-party notices
+
+The logo mark is an unmodified icon from IBM's Carbon Design System (Apache-2.0). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

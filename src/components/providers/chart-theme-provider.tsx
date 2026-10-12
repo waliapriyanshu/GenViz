@@ -76,7 +76,7 @@ const registerTheme = () => {
   // issue: https://github.com/VisActor/VChart/issues/3145
   const font = window
     .getComputedStyle(document.body)
-    .getPropertyValue("--font-gabarito")
+    .getPropertyValue("--font-plex-sans")
     .trim();
   const lightTheme: Partial<ITheme> = {
     ...customLightTheme,

@@ -25,7 +25,7 @@ export function ProgressSteps({ stages }: { stages: ProgressStage[] }) {
         return (
           <div
             key={stage}
-            className={`flex items-center gap-2 text-sm ${active ? "text-foreground" : "text-muted-foreground"}`}
+            className={`flex items-center gap-2 font-mono text-[13px] ${active ? "text-foreground" : "text-muted-foreground"}`}
           >
             {active ? (
               <Loader2

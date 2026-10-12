@@ -37,9 +37,9 @@ export function SourceCard({
   disabled: boolean;
 }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-sm">
+    <div className="rounded-md border bg-card p-5">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-secondary text-foreground">
           {source.kind === "csv" ? (
             <FileSpreadsheet className="h-5 w-5" />
           ) : (
@@ -47,7 +47,7 @@ export function SourceCard({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate font-semibold">
+          <div className="truncate font-serif text-lg font-medium leading-tight">
             {source.kind === "csv" ? source.fileName : source.database}
           </div>
           <div className="text-sm text-muted-foreground">
@@ -71,7 +71,7 @@ export function SourceCard({
       </div>
 
       <div className="mt-4">
-        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           {source.kind === "csv" ? "Detected columns" : "Tables"}
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -81,7 +81,7 @@ export function SourceCard({
                 return (
                   <span
                     key={column.name}
-                    className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs"
+                    className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-mono text-[11px]"
                     title={`${column.kind}, ${column.role}`}
                   >
                     <Icon
@@ -95,7 +95,7 @@ export function SourceCard({
             : source.tables.slice(0, 18).map((table) => (
                 <span
                   key={table}
-                  className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs"
+                  className="rounded-md bg-muted px-2 py-0.5 font-mono text-[11px]"
                 >
                   {table}
                 </span>
@@ -140,7 +140,7 @@ export function SourceCard({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(suggestion)}
-                className="rounded-full border bg-background px-3 py-1.5 text-sm hover:border-primary/50 hover:bg-primary/5 disabled:opacity-50"
+                className="rounded-md border bg-background px-3 py-1.5 text-sm hover:border-primary/60 hover:text-primary disabled:opacity-50"
               >
                 {suggestion}
               </button>
