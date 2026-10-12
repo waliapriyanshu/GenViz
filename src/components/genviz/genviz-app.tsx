@@ -347,7 +347,7 @@ export default function GenvizApp() {
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
           <div className="flex items-center gap-2">
             <LogoMark className="h-6 w-6 shrink-0 text-primary" />
-            <span className="hidden font-serif text-xl font-semibold tracking-tight sm:inline">
+            <span className="hidden text-xl font-semibold tracking-tight sm:inline">
               Genviz
             </span>
           </div>
@@ -399,8 +399,12 @@ export default function GenvizApp() {
             <NoticeMessage tone="error" message={bootError} />
           ) : !active ? (
             <section className="pb-2 pt-6 sm:pt-14">
-              <h1 className="text-balance font-serif text-4xl font-medium tracking-tight sm:text-5xl">
-                Ask your data a question.
+              <h1 className="text-balance text-4xl font-medium leading-[1.3] tracking-tight sm:text-5xl">
+                Ask your data a{" "}
+                <mark className="rounded-[2px] bg-highlight box-decoration-clone px-1 text-highlight-foreground">
+                  question
+                </mark>
+                .
               </h1>
               <p className="mt-4 max-w-xl text-pretty text-[17px] leading-relaxed text-muted-foreground">
                 Upload a CSV or connect a PostgreSQL database, then ask in plain

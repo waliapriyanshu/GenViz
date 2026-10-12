@@ -61,7 +61,7 @@ export function AssistantMessage({
         {hasChart && (
           <div className="rounded-md border bg-card p-4">
             {viz.title && (
-              <div className="mb-3 font-serif text-lg font-medium leading-snug">
+              <div className="mb-3 text-lg font-medium leading-snug">
                 {stripEmDashes(viz.title)}
               </div>
             )}
@@ -155,7 +155,7 @@ export function AssistantMessage({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(stripEmDashes(suggestion))}
-                className="rounded-md border bg-card px-2.5 py-1 text-[13px] hover:border-primary/60 hover:text-primary disabled:opacity-50"
+                className="rounded-md border bg-card px-2.5 py-1 text-[13px] hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
               >
                 {stripEmDashes(suggestion)}
               </button>

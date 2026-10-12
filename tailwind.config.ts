@@ -22,7 +22,6 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-plex-sans)", ...fontFamily.sans],
-        serif: ["var(--font-newsreader)", ...fontFamily.serif],
         mono: ["var(--font-plex-mono)", ...fontFamily.mono],
       },
       screens: {
@@ -64,6 +63,10 @@ const config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        highlight: {
+          DEFAULT: "hsl(var(--highlight))",
+          foreground: "hsl(var(--highlight-foreground))",
         },
       },
       borderRadius: {

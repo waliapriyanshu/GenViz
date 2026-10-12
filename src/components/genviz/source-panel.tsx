@@ -459,7 +459,7 @@ export function SourcePanel({
                         </div>
                       </div>
                       {active ? (
-                        <span className="text-xs font-medium text-primary dark:text-blue-400">
+                        <span className="text-xs font-medium text-primary">
                           Active
                         </span>
                       ) : (

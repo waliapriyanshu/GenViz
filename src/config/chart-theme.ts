@@ -1,21 +1,21 @@
 import type { ITheme } from "@visactor/vchart";
 
-/** Muted, print-style categorical palette; the first color is the brand accent. */
+/** Neutral graphite series first, then restrained accents. Dark mode leads with the lime highlight. */
 const lightPalette = [
-  "#B54012",
-  "#2F6F8F",
-  "#6B7F3A",
-  "#B8860B",
-  "#7A4F7D",
-  "#57534E",
+  "#1C1C1C",
+  "#6FA30C",
+  "#0E7490",
+  "#B45309",
+  "#BE185D",
+  "#78716C",
 ];
 const darkPalette = [
-  "#EE652B",
-  "#5DA9C9",
-  "#A3B86A",
-  "#E0B341",
-  "#B88BC0",
-  "#A8A29E",
+  "#C5F135",
+  "#5EC4D8",
+  "#F0B04A",
+  "#F27EA6",
+  "#E5E5E0",
+  "#8A8A86",
 ];
 
 const chrome = (text: string, line: string, grid: string) =>
@@ -38,12 +38,12 @@ export const customDarkTheme: Partial<ITheme> = {
   type: "dark",
   background: "transparent",
   colorScheme: { default: darkPalette },
-  ...chrome("#A39E97", "#3A3733", "#2A2825"),
+  ...chrome("#9A9A96", "#3A3A3A", "#232323"),
 };
 
 export const customLightTheme: Partial<ITheme> = {
   type: "light",
   background: "transparent",
   colorScheme: { default: lightPalette },
-  ...chrome("#6B655F", "#CFC9BF", "#E6E1D8"),
+  ...chrome("#5C5C5C", "#C8C8C4", "#E6E6E2"),
 };
