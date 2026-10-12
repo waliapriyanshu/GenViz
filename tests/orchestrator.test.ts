@@ -1,7 +1,11 @@
 import { APICallError } from "ai";
 import { MockLanguageModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";
-import { cleanModelText, runAnalysis } from "@/lib/agent/orchestrator";
+import {
+  cleanModelText,
+  parseTextualFinalAnswer,
+  runAnalysis,
+} from "@/lib/agent/orchestrator";
 import type { QueryAudit } from "@/lib/agent/tools";
 import type { ModelCandidate } from "@/lib/ai/provider";
 import type { QueryResult } from "@/lib/data/executor";
@@ -575,5 +579,96 @@ describe("cleanModelText", () => {
     expect(cleanModelText("West leads — followed by South.")).toBe(
       "West leads, followed by South.",
     );
+  });
+});
+
+describe("model text that mixes a summary with a JSON final answer", () => {
+  // Shapes captured from real gpt-oss responses.
+  const summary =
+    "Retail generated the highest revenue at $525,836.40 (34.3\u202f% of total).  ";
+  const jsonWithoutAnswer = `{
+  "result_id": "r1",
+  "chart": { "type": "bar", "x": "month", "y": ["total_revenue"], "title": "Revenue by Month" },
+  "status": "answered"
+}`;
+
+  it("strips bold tool-style labels and the trailing JSON from the answer", () => {
+    const raw = `${summary}\n\n**Chart:** a histogram of the \`revenue\` column.  \n\n${jsonWithoutAnswer}`;
+    expect(cleanModelText(raw)).toBe(
+      "Retail generated the highest revenue at $525,836.40 (34.3% of total).",
+    );
+  });
+
+  it("handles a colon outside the bold label and list markers", () => {
+    expect(
+      cleanModelText(
+        "Revenue rose.\n\n**Chart**: bar chart by month.\n- Result ID: r1",
+      ),
+    ).toBe("Revenue rose.");
+  });
+
+  it("normalizes narrow no-break spaces and non-breaking hyphens", () => {
+    expect(cleanModelText("Spans $40.85\u2011$4,273.17 (12.5\u202f%)")).toBe(
+      "Spans $40.85-$4,273.17 (12.5%)",
+    );
+  });
+
+  it("uses the summary as the answer when the JSON has none", () => {
+    const parsed = parseTextualFinalAnswer(
+      `${summary}\n\n**Chart:** bar chart.\n\n${jsonWithoutAnswer}`,
+    );
+    expect(parsed?.answer).toContain("Retail generated the highest revenue");
+    expect(parsed?.chart?.type).toBe("bar");
+    expect(parsed?.result_id).toBe("r1");
+  });
+
+  it("prefers the JSON answer when present", () => {
+    const parsed = parseTextualFinalAnswer(
+      `A long summary.\n\n{"answer": "Short answer.", "status": "answered"}`,
+    );
+    expect(parsed?.answer).toBe("Short answer.");
+  });
+
+  it("still parses pure and fenced JSON", () => {
+    expect(
+      parseTextualFinalAnswer('{"answer": "Pure.", "status": "answered"}')
+        ?.answer,
+    ).toBe("Pure.");
+    expect(
+      parseTextualFinalAnswer('```json\n{"answer": "Fenced."}\n```')?.answer,
+    ).toBe("Fenced.");
+    expect(
+      parseTextualFinalAnswer(
+        '{"name": "final_answer", "arguments": {"answer": "Wrapped."}}',
+      )?.answer,
+    ).toBe("Wrapped.");
+  });
+
+  it("returns nothing for ordinary text", () => {
+    expect(parseTextualFinalAnswer("Just a sentence.")).toBeUndefined();
+    expect(parseTextualFinalAnswer("{not json")).toBeUndefined();
+  });
+
+  it("never shows the JSON to the user in a full run", async () => {
+    const { outcome } = await run([
+      toolCall("run_query", { sql: GOOD_SQL, purpose: "Monthly revenue" }),
+      textReply(
+        `Revenue grew from $100 to $150.  \n\n**Chart:** line chart by month.  \n\n${jsonWithoutAnswer}`,
+      ),
+    ]);
+    if (outcome.kind !== "answer") throw new Error("expected answer");
+    expect(outcome.payload.answer).toBe("Revenue grew from $100 to $150.");
+    expect(outcome.payload.visualization?.type).toBe("bar");
+    expect(outcome.payload.answer).not.toMatch(/[{}]|Chart|result_id/);
+  });
+
+  it("falls back to a computed summary when only JSON without an answer is returned", async () => {
+    const { outcome } = await run([
+      toolCall("run_query", { sql: GOOD_SQL, purpose: "Monthly revenue" }),
+      textReply(jsonWithoutAnswer),
+    ]);
+    if (outcome.kind !== "answer") throw new Error("expected answer");
+    expect(outcome.payload.answer.length).toBeGreaterThan(0);
+    expect(outcome.payload.answer).not.toMatch(/[{}]|result_id/);
   });
 });

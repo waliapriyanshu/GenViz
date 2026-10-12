@@ -179,43 +179,78 @@ export async function runAnalysis(
 }
 
 /**
- * Recovers a final_answer that the model emitted as text (plain JSON, a ```json fence,
- * or a {"name": "final_answer", "arguments": {...}} wrapper). Validated with the same schema.
+ * Splits "summary\n\n{json}" into the summary and the trailing JSON object. gpt-oss
+ * often writes its final_answer call as text after a short summary instead of calling the tool.
+ */
+function splitTrailingJson(
+  text: string,
+): { prose: string; json: Record<string, unknown> } | undefined {
+  const body = text.trim().replace(/\s*```\s*$/, "");
+  let tried = 0;
+  for (const match of body.matchAll(/^[ \t]*\{/gm)) {
+    if (++tried > 10) break;
+    const brace = match.index + match[0].length - 1;
+    try {
+      const json: unknown = JSON.parse(body.slice(brace));
+      if (json && typeof json === "object" && !Array.isArray(json)) {
+        const prose = body
+          .slice(0, match.index)
+          .replace(/```(?:json)?\s*$/i, "");
+        return { prose, json: json as Record<string, unknown> };
+      }
+    } catch {
+      // not valid JSON from this brace; try the next candidate
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Recovers a final_answer that the model emitted as text: plain JSON, a ```json fence,
+ * a {"name": "final_answer", "arguments": {...}} wrapper, or a summary followed by
+ * one of those (the summary becomes the answer when the JSON has none). Validated
+ * with the same schema.
  */
 export function parseTextualFinalAnswer(
   text: string | undefined,
 ): FinalAnswer | undefined {
   if (!text) return undefined;
-  const trimmed = text
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
-  if (!trimmed.startsWith("{")) return undefined;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(trimmed);
-  } catch {
-    return undefined;
-  }
-  const record = parsed as Record<string, unknown>;
+  const split = splitTrailingJson(text);
+  if (!split) return undefined;
+  const record = split.json;
   const candidate =
     (record.arguments as Record<string, unknown> | undefined) ??
     (record.parameters as Record<string, unknown> | undefined) ??
     record;
+  const prose = cleanModelText(split.prose);
   const result = finalAnswerSchema.safeParse({
     status: "answered",
+    ...(prose && !candidate.answer ? { answer: prose } : {}),
     ...candidate,
   });
   return result.success ? result.data : undefined;
 }
 
 /** Tool-style lines the model sometimes echoes into the answer ("Chart: ...", "Result ID: r1, x = ..."). */
-const INTERNAL_LINE = /^\s*(chart|result[ _]?id|visualization)\s*[:=]/i;
+const INTERNAL_LINE =
+  /^\s*(?:[-*\u2022]\s+)?(chart|result[ _]?id|visualization)\s*[:=]/i;
 
-/** Plain-text answer for the chat bubble: drops markdown tables/formatting (the UI shows the table). */
+/**
+ * Plain-text answer for the chat bubble: drops markdown tables and formatting, tool-style
+ * lines and any trailing JSON object (the UI shows the table and chart itself).
+ */
 export function cleanModelText(text: string | undefined): string {
   if (!text) return "";
-  const plain = text
+  // gpt-oss writes narrow no-break spaces ("34.3 %") and non-breaking hyphens.
+  const normalized = text
+    .replace(/[\u00a0\u202f]/g, " ")
+    .replace(/\u2011/g, "-");
+  const summary = splitTrailingJson(normalized)?.prose ?? normalized;
+  const plain = summary
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/__(.+?)__/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/`([^`]+)`/g, "$1")
     .split("\n")
     .filter(
       (line) =>
@@ -225,10 +260,6 @@ export function cleanModelText(text: string | undefined): string {
     )
     .join("\n")
     .replace(/(\d) %/g, "$1%")
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/__(.+?)__/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/`([^`]+)`/g, "$1")
     .replace(/\n{3,}/g, "\n\n")
     .trim()
     .slice(0, 1500);
