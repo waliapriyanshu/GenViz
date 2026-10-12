@@ -244,7 +244,7 @@ describe("orchestrator — safety and repair", () => {
     if (outcome.kind !== "answer") throw new Error("expected answer");
     expect(outcome.payload.answer).not.toMatch(/98,765|312/);
     expect(outcome.payload.answer).toMatch(
-      /went from 100 in 2026-01-01 to 150 in 2026-03-01 \(\+50%\)/,
+      /went from 100 in January 2026 to 150 in March 2026 \(\+50%\)/,
     );
   });
 
