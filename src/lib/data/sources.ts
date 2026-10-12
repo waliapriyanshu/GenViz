@@ -72,7 +72,7 @@ export interface DataSourceRuntime {
   id: string;
   kind: "csv" | "postgres";
   name: string;
-  /** Human label, e.g. "Uploaded CSV — sales.csv" */
+  /** Human label, e.g. "Uploaded CSV: sales.csv" */
   label: string;
   /** Currency symbol when an uploaded dataset uses exactly one (for formatting). */
   currency?: string;
@@ -172,7 +172,7 @@ function csvRuntime(source: Source): DataSourceRuntime {
     id: source.id,
     kind: "csv",
     name: source.name,
-    label: `Uploaded CSV — ${details.fileName}`,
+    label: `Uploaded CSV: ${details.fileName}`,
     currency: (() => {
       const symbols = new Set(
         details.columns.map((c) => c.currency).filter(Boolean),
@@ -286,7 +286,7 @@ function postgresRuntime(source: Source): DataSourceRuntime {
     id: source.id,
     kind: "postgres",
     name: source.name,
-    label: `PostgreSQL — ${details.database}`,
+    label: `PostgreSQL: ${details.database}`,
     allowed,
     schemaOverview() {
       const lines: string[] = [

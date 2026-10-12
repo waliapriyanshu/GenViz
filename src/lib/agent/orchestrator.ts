@@ -29,6 +29,7 @@ import {
 import type { ModelCandidate } from "@/lib/ai/provider";
 import type { Facts } from "@/lib/analysis/analyze";
 import type { DataSourceRuntime } from "@/lib/data/sources";
+import { stripEmDashes } from "@/lib/text";
 import {
   buildTable,
   buildVisualization,
@@ -208,15 +209,22 @@ export function parseTextualFinalAnswer(
   return result.success ? result.data : undefined;
 }
 
+/** Tool-style lines the model sometimes echoes into the answer ("Chart: ...", "Result ID: r1, x = ..."). */
+const INTERNAL_LINE = /^\s*(chart|result[ _]?id|visualization)\s*[:=]/i;
+
 /** Plain-text answer for the chat bubble: drops markdown tables/formatting (the UI shows the table). */
 export function cleanModelText(text: string | undefined): string {
   if (!text) return "";
-  return text
+  const plain = text
     .split("\n")
     .filter(
-      (line) => !/^\s*\|.*\|\s*$/.test(line) && !/^\s*\|?\s*:?-{3,}/.test(line),
+      (line) =>
+        !/^\s*\|.*\|\s*$/.test(line) &&
+        !/^\s*\|?\s*:?-{3,}/.test(line) &&
+        !INTERNAL_LINE.test(line),
     )
     .join("\n")
+    .replace(/(\d) %/g, "$1%")
     .replace(/\*\*(.+?)\*\*/g, "$1")
     .replace(/__(.+?)__/g, "$1")
     .replace(/^#{1,6}\s+/gm, "")
@@ -224,6 +232,7 @@ export function cleanModelText(text: string | undefined): string {
     .replace(/\n{3,}/g, "\n\n")
     .trim()
     .slice(0, 1500);
+  return stripEmDashes(plain);
 }
 
 function currencyFor(input: OrchestratorInput): string | undefined {
@@ -240,7 +249,17 @@ function assemble(
   const textual = state.final ? undefined : parseTextualFinalAnswer(modelText);
   if (textual) state.final = textual;
   const final = state.final
-    ? { ...state.final, answer: cleanModelText(state.final.answer) }
+    ? {
+        ...state.final,
+        answer: cleanModelText(state.final.answer),
+        suggestions: state.final.suggestions?.map(stripEmDashes),
+        chart: state.final.chart?.title
+          ? {
+              ...state.final.chart,
+              title: stripEmDashes(state.final.chart.title),
+            }
+          : state.final.chart,
+      }
     : undefined;
   const text = textual ? "" : cleanModelText(modelText);
   const queries = [...state.results.values()].map((r) => r.sql);

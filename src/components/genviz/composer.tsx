@@ -92,11 +92,12 @@ export function Composer({
     }
   };
 
+  // `disabledReason` is already the textarea placeholder, so it is not repeated here.
   const status = busy
     ? "Analyzing your data…"
     : coolingDown
       ? `Next query available in ${formatDuration(remaining)}`
-      : (disabledReason ?? "");
+      : "";
 
   return (
     <div className="space-y-2">
@@ -169,7 +170,7 @@ export function Composer({
           {status}
         </span>
         <span className="hidden sm:inline">
-          Genviz only reads your data — it never changes it.
+          Genviz only reads your data and never changes it.
         </span>
       </div>
     </div>

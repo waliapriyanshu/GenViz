@@ -1,7 +1,7 @@
 import { APICallError } from "ai";
 import { MockLanguageModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";
-import { runAnalysis } from "@/lib/agent/orchestrator";
+import { cleanModelText, runAnalysis } from "@/lib/agent/orchestrator";
 import type { QueryAudit } from "@/lib/agent/tools";
 import type { ModelCandidate } from "@/lib/ai/provider";
 import type { QueryResult } from "@/lib/data/executor";
@@ -92,7 +92,7 @@ function fakeSource(
     id: "src-1",
     kind: "csv",
     name: "sales",
-    label: "Uploaded CSV — sales.csv",
+    label: "Uploaded CSV: sales.csv",
     allowed,
     ran,
     schemaOverview: () =>
@@ -173,7 +173,7 @@ describe("orchestrator — happy path", () => {
     expect(outcome.payload.visualization?.type).toBe("line");
     expect(outcome.payload.table?.rows).toHaveLength(3);
     expect(outcome.payload.metadata).toMatchObject({
-      source: "Uploaded CSV — sales.csv",
+      source: "Uploaded CSV: sales.csv",
       rowCount: 3,
       queries: [GOOD_SQL],
     });
@@ -454,8 +454,9 @@ describe("orchestrator — provider errors", () => {
       ),
     ]);
     if (outcome.kind !== "answer") throw new Error("expected answer");
+    // em dashes from the model are converted to natural punctuation
     expect(outcome.payload.answer).toBe(
-      "Genviz is read-only, so I can't delete data — but I can analyze it.",
+      "Genviz is read-only, so I can't delete data, but I can analyze it.",
     );
     expect(outcome.payload.metadata?.steps.join(" ")).toMatch(
       /without querying/,
@@ -541,5 +542,38 @@ describe("orchestrator — conversation memory", () => {
     expect(prompt).toContain("Show revenue by month");
     expect(prompt).not.toContain("x".repeat(1_300)); // long turns are clipped
     expect(prompt).toContain("Today's date is 2026-09-25");
+  });
+});
+
+describe("cleanModelText", () => {
+  it("drops tool-style lines the model echoes into the answer", () => {
+    const raw = [
+      "The West region generated the highest revenue, totaling $395,041.",
+      "",
+      "Chart: bar chart showing total revenue by region.",
+      "",
+      "Result ID: r1, x = region, y = total_revenue.",
+    ].join("\n");
+    expect(cleanModelText(raw)).toBe(
+      "The West region generated the highest revenue, totaling $395,041.",
+    );
+  });
+
+  it("keeps ordinary sentences that merely mention a chart", () => {
+    expect(cleanModelText("The chart below shows West leading.")).toBe(
+      "The chart below shows West leading.",
+    );
+  });
+
+  it("tightens a space before a percent sign", () => {
+    expect(cleanModelText("About 25.8 % of overall sales.")).toBe(
+      "About 25.8% of overall sales.",
+    );
+  });
+
+  it("replaces em dashes with natural punctuation", () => {
+    expect(cleanModelText("West leads — followed by South.")).toBe(
+      "West leads, followed by South.",
+    );
   });
 });

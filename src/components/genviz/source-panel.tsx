@@ -178,7 +178,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
                   (done || active) &&
                   "rows" in state &&
                   state.rows
-                    ? ` — ${state.rows.toLocaleString()} rows, ${state.columns} columns`
+                    ? ` (${state.rows.toLocaleString()} rows, ${state.columns} columns)`
                     : ""}
                 </span>
               </div>
@@ -459,7 +459,7 @@ export function SourcePanel({
                         </div>
                       </div>
                       {active ? (
-                        <span className="text-xs font-medium text-primary">
+                        <span className="text-xs font-medium text-primary dark:text-blue-400">
                           Active
                         </span>
                       ) : (
@@ -513,7 +513,7 @@ export function SourcePanel({
               {(
                 [
                   ["csv", "Upload CSV", FileSpreadsheet],
-                  ["postgres", "Connect PostgreSQL", Database],
+                  ["postgres", "PostgreSQL", Database],
                 ] as const
               ).map(([key, label, Icon]) => (
                 <button

@@ -41,7 +41,7 @@ export function NoticeMessage({
                 .
               </>
             ) : (
-              "The pause is over — go ahead and ask again."
+              "The pause is over. Go ahead and ask again."
             )}
           </div>
         </div>

@@ -42,7 +42,7 @@ const storage = {
       if (value === null) window.localStorage.removeItem(key);
       else window.localStorage.setItem(key, value);
     } catch {
-      // storage unavailable (private mode) — fine
+      // storage unavailable (private mode), which is fine
     }
   },
 };
@@ -341,7 +341,7 @@ export default function GenvizApp() {
   return (
     <div className="flex h-[100dvh] flex-col bg-background">
       <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
           <div className="flex items-center gap-2 font-semibold tracking-tight">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Sparkles className="h-4 w-4" />
@@ -365,7 +365,7 @@ export default function GenvizApp() {
                 Data source
               </span>
               <span className="truncate font-medium">
-                {active ? sourceLabel(active) : "None — connect data"}
+                {active ? sourceLabel(active) : "Connect data"}
               </span>
               <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             </button>
@@ -412,7 +412,7 @@ export default function GenvizApp() {
                 >
                   <Upload className="h-6 w-6 text-primary" />
                   <div className="mt-3 font-medium">Upload a CSV</div>
-                  <div className="mt-1 text-sm text-muted-foreground">
+                  <div className="mt-1 text-balance text-sm text-muted-foreground">
                     Get instant charts from a spreadsheet export.
                   </div>
                 </button>
@@ -423,7 +423,7 @@ export default function GenvizApp() {
                 >
                   <Database className="h-6 w-6 text-primary" />
                   <div className="mt-3 font-medium">Connect PostgreSQL</div>
-                  <div className="mt-1 text-sm text-muted-foreground">
+                  <div className="mt-1 text-balance text-sm text-muted-foreground">
                     Ask questions of a live database, read-only.
                   </div>
                 </button>
@@ -439,8 +439,8 @@ export default function GenvizApp() {
                     <FileSpreadsheet className="h-6 w-6 text-primary" />
                   )}
                   <div className="mt-3 font-medium">Try a sample dataset</div>
-                  <div className="mt-1 text-sm text-muted-foreground">
-                    {sampleState ?? "1,688 sales orders across 2025–2026."}
+                  <div className="mt-1 text-balance text-sm text-muted-foreground">
+                    {sampleState ?? "1,688 sales orders from 2025 to 2026."}
                   </div>
                 </button>
               </div>

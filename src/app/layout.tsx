@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 const gabarito = Gabarito({ subsets: ["latin"], variable: "--font-gabarito" });
 
 export const metadata: Metadata = {
-  title: "Genviz — talk to your data",
+  title: "Genviz: talk to your data",
   description:
     "Upload a CSV or connect PostgreSQL, ask questions in plain English, and get answers with charts.",
 };

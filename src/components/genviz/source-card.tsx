@@ -22,8 +22,8 @@ const KIND_ICON = {
 
 export function sourceLabel(source: ClientSource): string {
   return source.kind === "csv"
-    ? `Uploaded CSV — ${source.fileName}`
-    : `PostgreSQL — ${source.database}`;
+    ? `Uploaded CSV: ${source.fileName}`
+    : `PostgreSQL: ${source.database}`;
 }
 
 /** Summary of the active data source plus schema-based example questions. */
