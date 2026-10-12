@@ -5,7 +5,6 @@ import {
   Database,
   FileSpreadsheet,
   Info,
-  Sparkles,
   Table2,
   Workflow,
 } from "lucide-react";
@@ -22,7 +21,7 @@ const ChartView = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[340px] w-full animate-pulse rounded-lg bg-muted" />
+      <div className="h-[340px] w-full animate-pulse rounded-md bg-muted" />
     ),
   },
 );
@@ -45,13 +44,10 @@ export function AssistantMessage({
   const meta = payload.metadata;
 
   return (
-    <div className="flex gap-3">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Sparkles className="h-4 w-4" aria-hidden />
-      </div>
-      <div className="min-w-0 flex-1 space-y-3">
+    <div className="min-w-0">
+      <div className="space-y-4">
         <div
-          className={`flex items-start gap-2 whitespace-pre-line leading-relaxed ${isProblem ? "text-foreground/90" : ""}`}
+          className={`flex items-start gap-2 whitespace-pre-line text-[17px] leading-relaxed ${isProblem ? "text-foreground/90" : ""}`}
         >
           {isProblem && (
             <AlertTriangle
@@ -63,9 +59,9 @@ export function AssistantMessage({
         </div>
 
         {hasChart && (
-          <div className="rounded-xl border bg-card p-4 shadow-sm">
+          <div className="rounded-md border bg-card p-4">
             {viz.title && (
-              <div className="mb-2 text-sm font-medium text-muted-foreground">
+              <div className="mb-3 font-serif text-lg font-medium leading-snug">
                 {stripEmDashes(viz.title)}
               </div>
             )}
@@ -93,7 +89,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowData((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
+                className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-accent"
                 aria-expanded={showData}
               >
                 <Table2 className="h-3.5 w-3.5" aria-hidden />{" "}
@@ -104,7 +100,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowHow((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
+                className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-accent"
                 aria-expanded={showHow}
               >
                 <Workflow className="h-3.5 w-3.5" aria-hidden /> How I got this
@@ -114,8 +110,8 @@ export function AssistantMessage({
         )}
 
         {showHow && meta && (
-          <div className="space-y-3 rounded-xl border bg-muted/30 p-4 text-sm">
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+          <div className="space-y-3 rounded-md border bg-muted/40 p-4 text-sm">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 {meta.sourceKind === "csv" ? (
                   <FileSpreadsheet className="h-3.5 w-3.5" />
@@ -143,7 +139,7 @@ export function AssistantMessage({
                 <div className="mb-1 text-xs font-medium text-muted-foreground">
                   Read-only query{meta.queries.length > 1 ? ` ${i + 1}` : ""}
                 </div>
-                <pre className="overflow-x-auto rounded-lg bg-background p-3 font-mono text-xs leading-relaxed">
+                <pre className="overflow-x-auto rounded-md border bg-background p-3 font-mono text-xs leading-relaxed">
                   {sql.trim()}
                 </pre>
               </div>
@@ -159,7 +155,7 @@ export function AssistantMessage({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(stripEmDashes(suggestion))}
-                className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground hover:bg-secondary/70 disabled:opacity-50"
+                className="rounded-md border bg-card px-2.5 py-1 text-[13px] hover:border-primary/60 hover:text-primary disabled:opacity-50"
               >
                 {stripEmDashes(suggestion)}
               </button>

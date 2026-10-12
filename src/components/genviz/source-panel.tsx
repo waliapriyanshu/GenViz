@@ -123,7 +123,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
           setDragging(false);
           void handleFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 text-center transition ${dragging ? "border-primary bg-primary/5" : "border-border"}`}
+        className={`flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition ${dragging ? "border-primary bg-primary/5" : "border-border"}`}
       >
         <Upload className="h-8 w-8 text-muted-foreground" aria-hidden />
         <div className="font-medium">Drop a CSV file here</div>
@@ -150,7 +150,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       </div>
 
       {busy && (
-        <div className="space-y-2 rounded-xl border p-4" aria-live="polite">
+        <div className="space-y-2 rounded-md border p-4" aria-live="polite">
           <div className="truncate text-sm font-medium">
             {"fileName" in state ? state.fileName : ""}
           </div>
@@ -188,7 +188,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       )}
       {state.phase === "error" && (
         <div
-          className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+          className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           role="alert"
         >
           {state.message}
@@ -264,7 +264,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
         <label htmlFor="pg-connection" className="text-sm font-medium">
           PostgreSQL connection string
         </label>
-        <div className="flex items-center gap-2 rounded-lg border bg-background pr-1 focus-within:ring-2 focus-within:ring-primary/40">
+        <div className="flex items-center gap-2 rounded-md border bg-background pr-1 focus-within:ring-2 focus-within:ring-primary/40">
           <input
             id="pg-connection"
             type={reveal ? "text" : "password"}
@@ -310,7 +310,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
           onChange={(e) => setName(e.target.value)}
           maxLength={80}
           placeholder="e.g. Sales DB"
-          className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+          className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
         />
       </div>
       <div className="flex gap-2">
@@ -328,7 +328,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       </div>
       {result && (
         <div
-          className="space-y-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm"
+          className="space-y-2 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm"
           aria-live="polite"
         >
           <div className="flex items-center gap-2 font-medium text-emerald-700 dark:text-emerald-400">
@@ -359,7 +359,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       )}
       {error && (
         <div
-          className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+          className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           role="alert"
         >
           {error}
@@ -403,7 +403,7 @@ export function SourcePanel({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex justify-end bg-black/35"
       onClick={onClose}
     >
       <div
@@ -439,7 +439,7 @@ export function SourcePanel({
                   return (
                     <li
                       key={source.id}
-                      className={`flex items-center gap-3 rounded-xl border p-3 ${active ? "border-primary/50 bg-primary/5" : ""}`}
+                      className={`flex items-center gap-3 rounded-md border p-3 ${active ? "border-primary/50 bg-primary/5" : ""}`}
                     >
                       {source.kind === "csv" ? (
                         <FileSpreadsheet className="h-5 w-5 shrink-0 text-muted-foreground" />
@@ -507,7 +507,7 @@ export function SourcePanel({
 
           <section className="space-y-4">
             <div
-              className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+              className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1"
               role="tablist"
             >
               {(

@@ -1,7 +1,9 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { VChart } from "@visactor/react-vchart";
+import { customDarkTheme, customLightTheme } from "@/config/chart-theme";
 import { formatNumber, humanizeKey } from "@/lib/client/format";
 import type { Visualization } from "@/lib/viz/types";
 
@@ -213,7 +215,24 @@ export function toVChartSpec(viz: Visualization): Record<string, any> | null {
 export function ChartView({ viz }: { viz: Visualization }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const spec = useMemo(() => toVChartSpec(viz), [viz]);
+  const { resolvedTheme } = useTheme();
+  const spec = useMemo(() => {
+    const base = toVChartSpec(viz);
+    if (!base) return null;
+    // The theme travels with each chart: VChart does not re-apply a globally registered
+    // dark theme to charts created after the page loads.
+    const fontFamily =
+      typeof document === "undefined"
+        ? ""
+        : getComputedStyle(document.body)
+            .getPropertyValue("--font-plex-sans")
+            .trim();
+    const theme = resolvedTheme === "dark" ? customDarkTheme : customLightTheme;
+    return {
+      ...base,
+      theme: { ...theme, ...(fontFamily ? { fontFamily } : {}) },
+    };
+  }, [viz, resolvedTheme]);
   if (!spec) return null;
   const height = viz.config.horizontal
     ? Math.min(640, Math.max(280, viz.data.length * 26 + 80))

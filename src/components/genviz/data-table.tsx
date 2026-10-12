@@ -12,7 +12,7 @@ export function DataTable({ table }: { table: ResultTable }) {
   );
   const rawColumns = table.columns.map((name) => RAW_NUMBER_COLUMN.test(name));
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-md border">
       <div className="max-h-80 overflow-auto">
         <table className="w-full border-collapse text-sm">
           <thead className="sticky top-0 bg-muted/90 backdrop-blur">
@@ -34,7 +34,7 @@ export function DataTable({ table }: { table: ResultTable }) {
                 {row.map((cell, c) => (
                   <td
                     key={c}
-                    className={`whitespace-nowrap px-3 py-1.5 ${numericColumns[c] ? "text-right tabular-nums" : ""}`}
+                    className={`whitespace-nowrap px-3 py-1.5 ${numericColumns[c] ? "text-right font-mono text-[13px] tabular-nums" : ""}`}
                   >
                     {rawColumns[c] && typeof cell === "number"
                       ? String(cell)

@@ -102,7 +102,7 @@ export function Composer({
   return (
     <div className="space-y-2">
       <div
-        className={`flex items-end gap-2 rounded-2xl border bg-card p-2 shadow-sm transition focus-within:ring-2 focus-within:ring-primary/40 ${blocked ? "opacity-90" : ""}`}
+        className={`flex items-end gap-2 rounded-lg border bg-card p-2 transition focus-within:border-foreground/40 focus-within:ring-1 focus-within:ring-ring/60 ${blocked ? "opacity-90" : ""}`}
       >
         <label htmlFor="genviz-question" className="sr-only">
           Ask a question about your data
@@ -119,7 +119,7 @@ export function Composer({
               submit();
             }
           }}
-          placeholder={disabledReason ?? "Ask anything about your data…"}
+          placeholder={disabledReason ?? "Ask about your data…"}
           disabled={!!disabledReason}
           maxLength={1000}
           className="max-h-40 min-h-[44px] flex-1 resize-none bg-transparent px-3 py-2.5 text-[15px] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
@@ -129,7 +129,7 @@ export function Composer({
             type="button"
             onClick={toggleMic}
             disabled={!!disabledReason}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${listening ? "bg-destructive text-destructive-foreground" : "text-muted-foreground hover:bg-accent"} disabled:opacity-50`}
+            className={`flex h-10 w-10 items-center justify-center rounded-md transition ${listening ? "bg-destructive text-destructive-foreground" : "text-muted-foreground hover:bg-accent"} disabled:opacity-50`}
             aria-label={listening ? "Stop voice input" : "Ask with your voice"}
             title={listening ? "Stop voice input" : "Ask with your voice"}
           >
@@ -144,7 +144,7 @@ export function Composer({
           type="button"
           onClick={submit}
           disabled={!canSend}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+          className="flex h-10 w-10 items-center justify-center rounded-md bg-foreground text-background transition hover:bg-foreground/85 disabled:bg-muted disabled:text-muted-foreground"
           aria-label="Send question"
         >
           {busy ? (

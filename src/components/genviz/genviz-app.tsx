@@ -1,17 +1,15 @@
 "use client";
 
 import {
+  ArrowRight,
   ChevronDown,
-  Database,
-  FileSpreadsheet,
   Loader2,
   MessageSquarePlus,
-  Sparkles,
-  Upload,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "@/components/genviz/assistant-message";
 import { Composer } from "@/components/genviz/composer";
+import { LogoMark } from "@/components/genviz/logo";
 import { NoticeMessage } from "@/components/genviz/notice-message";
 import { ProgressSteps } from "@/components/genviz/progress-steps";
 import { SourceCard, sourceLabel } from "@/components/genviz/source-card";
@@ -347,11 +345,11 @@ export default function GenvizApp() {
     <div className="flex h-[100dvh] flex-col bg-background">
       <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
-          <div className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <LogoMark className="h-6 w-6 shrink-0 text-primary" />
+            <span className="hidden font-serif text-xl font-semibold tracking-tight sm:inline">
+              Genviz
             </span>
-            <span className="hidden sm:inline">Genviz</span>
           </div>
           <div className="ml-auto flex min-w-0 items-center gap-2">
             <button
@@ -359,7 +357,7 @@ export default function GenvizApp() {
               onClick={() =>
                 setPanel({ open: true, tab: active?.kind ?? "csv" })
               }
-              className="flex max-w-[60vw] items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
+              className="flex max-w-[60vw] items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
               aria-label="Change data source"
             >
               <span
@@ -392,7 +390,7 @@ export default function GenvizApp() {
       </header>
 
       <main ref={scrollRef} className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+        <div className="mx-auto max-w-3xl space-y-8 px-4 py-8">
           {booting ? (
             <div className="flex justify-center py-24 text-muted-foreground">
               <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading" />
@@ -400,55 +398,61 @@ export default function GenvizApp() {
           ) : bootError ? (
             <NoticeMessage tone="error" message={bootError} />
           ) : !active ? (
-            <section className="py-10 text-center">
-              <h1 className="text-4xl font-semibold tracking-tight">
-                Talk to your data.
+            <section className="pb-2 pt-6 sm:pt-14">
+              <h1 className="text-balance font-serif text-4xl font-medium tracking-tight sm:text-5xl">
+                Ask your data a question.
               </h1>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-                Upload a CSV or connect a PostgreSQL database, then ask
-                questions in plain English. Genviz queries your data safely and
-                answers with charts.
+              <p className="mt-4 max-w-xl text-pretty text-[17px] leading-relaxed text-muted-foreground">
+                Upload a CSV or connect a PostgreSQL database, then ask in plain
+                English. Genviz answers with a chart and the numbers behind it.
               </p>
-              <div className="mt-10 grid gap-3 text-left sm:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={() => setPanel({ open: true, tab: "csv" })}
-                  className="rounded-2xl border bg-card p-5 transition hover:border-primary/50 hover:shadow-sm"
-                >
-                  <Upload className="h-6 w-6 text-primary" />
-                  <div className="mt-3 font-medium">Upload a CSV</div>
-                  <div className="mt-1 text-balance text-sm text-muted-foreground">
-                    Get instant charts from a spreadsheet export.
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPanel({ open: true, tab: "postgres" })}
-                  className="rounded-2xl border bg-card p-5 transition hover:border-primary/50 hover:shadow-sm"
-                >
-                  <Database className="h-6 w-6 text-primary" />
-                  <div className="mt-3 font-medium">Connect PostgreSQL</div>
-                  <div className="mt-1 text-balance text-sm text-muted-foreground">
-                    Ask questions of a live database, read-only.
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={loadSample}
-                  disabled={!!sampleState}
-                  className="rounded-2xl border bg-card p-5 transition hover:border-primary/50 hover:shadow-sm disabled:opacity-70"
-                >
-                  {sampleState ? (
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  ) : (
-                    <FileSpreadsheet className="h-6 w-6 text-primary" />
-                  )}
-                  <div className="mt-3 font-medium">Try a sample dataset</div>
-                  <div className="mt-1 text-balance text-sm text-muted-foreground">
-                    {sampleState ?? "1,688 sales orders from 2025 to 2026."}
-                  </div>
-                </button>
-              </div>
+              <ul className="mt-10 divide-y border-y">
+                {[
+                  {
+                    title: "Upload a CSV",
+                    text: "Drop in a spreadsheet export.",
+                    onClick: () => setPanel({ open: true, tab: "csv" }),
+                  },
+                  {
+                    title: "Connect PostgreSQL",
+                    text: "Query a live database through a read-only connection.",
+                    onClick: () => setPanel({ open: true, tab: "postgres" }),
+                  },
+                  {
+                    title: "Try the sample data",
+                    text:
+                      sampleState ?? "1,688 sales orders from 2025 to 2026.",
+                    onClick: loadSample,
+                    loading: !!sampleState,
+                  },
+                ].map((option, index) => (
+                  <li key={option.title}>
+                    <button
+                      type="button"
+                      onClick={option.onClick}
+                      disabled={option.loading}
+                      className="group flex w-full items-center gap-4 px-1 py-4 text-left transition-colors hover:bg-accent/60 disabled:opacity-70 sm:gap-6"
+                    >
+                      <span className="w-6 font-mono text-xs text-muted-foreground">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium">
+                          {option.title}
+                        </span>
+                        <span className="mt-0.5 block text-sm text-muted-foreground">
+                          {option.text}
+                        </span>
+                      </span>
+                      {option.loading ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </section>
           ) : (
             <>
@@ -458,7 +462,7 @@ export default function GenvizApp() {
               {messages.map((message) =>
                 message.role === "user" ? (
                   <div key={message.id} className="flex justify-end">
-                    <div className="max-w-[85%] whitespace-pre-line rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-primary-foreground">
+                    <div className="max-w-[85%] whitespace-pre-line rounded-lg border bg-secondary px-4 py-2.5">
                       {message.content}
                     </div>
                   </div>
@@ -479,14 +483,9 @@ export default function GenvizApp() {
                 ),
               )}
               {pending && (
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Sparkles className="h-4 w-4 animate-pulse" aria-hidden />
-                  </div>
-                  <ProgressSteps
-                    stages={pending.length ? pending : ["understanding"]}
-                  />
-                </div>
+                <ProgressSteps
+                  stages={pending.length ? pending : ["understanding"]}
+                />
               )}
             </>
           )}
