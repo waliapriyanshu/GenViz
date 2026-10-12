@@ -14,6 +14,39 @@ export function formatValue(value: unknown, currency?: string): string {
   return currency ? `${currency}${formatted}` : formatted;
 }
 
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * Turns ISO dates into words ("2026-03-01" becomes "March 2026"). Dates that all fall
+ * on the 1st are treated as monthly periods, matching the chart axis; anything that is
+ * not an ISO date is returned unchanged.
+ */
+function periodLabeler(periods: string[]): (period: string) => string {
+  const iso = /^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/;
+  const monthly = periods.every((p) => iso.exec(p)?.[3] === "01");
+  return (period) => {
+    const match = iso.exec(period);
+    const month = match ? MONTH_NAMES[Number(match[2]) - 1] : undefined;
+    if (!match || !month) return period;
+    return monthly
+      ? `${month} ${match[1]}`
+      : `${month} ${Number(match[3])}, ${match[1]}`;
+  };
+}
+
 type Named = { name: string; value: number; share_pct?: number | null };
 type Point = { period: string; value: number };
 
@@ -39,10 +72,11 @@ export function describeFacts(facts: Facts, currency?: string): string {
       typeof facts.change_pct === "number"
         ? ` (${facts.change_pct > 0 ? "+" : ""}${facts.change_pct}%)`
         : "";
+    const label = periodLabeler([latest.period, previous.period]);
     const coverage = facts.uneven_coverage
-      ? ` Note: ${latest.period} covers ${latest.sub_periods} periods vs ${previous.sub_periods} in ${previous.period}.`
+      ? ` Note: ${label(latest.period)} covers ${latest.sub_periods} periods vs ${previous.sub_periods} in ${label(previous.period)}.`
       : "";
-    return `${humanize(String(facts.measure))}: ${fmt(latest.total)} in ${latest.period} vs ${fmt(previous.total)} in ${previous.period}${change}.${coverage}`;
+    return `${humanize(String(facts.measure))}: ${fmt(latest.total)} in ${label(latest.period)} vs ${fmt(previous.total)} in ${label(previous.period)}${change}.${coverage}`;
   }
   if (facts.operation === "trend" && facts.first && facts.last) {
     const first = facts.first as Point;
@@ -53,10 +87,15 @@ export function describeFacts(facts: Facts, currency?: string): string {
         ? ` (${facts.change_pct > 0 ? "+" : ""}${facts.change_pct}%)`
         : "";
     const measure = humanize(String(facts.measure));
+    const label = periodLabeler(
+      [first.period, last.period, peak?.period].filter(
+        (p): p is string => typeof p === "string",
+      ),
+    );
     const peakText = peak
-      ? ` The highest value was ${fmt(peak.value)} in ${peak.period}.`
+      ? ` The highest value was ${fmt(peak.value)} in ${label(peak.period)}.`
       : "";
-    return `${measure} went from ${fmt(first.value)} in ${first.period} to ${fmt(last.value)} in ${last.period}${change}.${peakText}`;
+    return `${measure} went from ${fmt(first.value)} in ${label(first.period)} to ${fmt(last.value)} in ${label(last.period)}${change}.${peakText}`;
   }
   if (
     (facts.operation === "top" || facts.operation === "compare") &&
