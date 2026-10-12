@@ -58,6 +58,31 @@ export async function apiJson<T>(url: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+/**
+ * GETs JSON, retrying server and network failures a couple of times. A sleeping
+ * serverless database fails its first request while it wakes up, and the retry
+ * succeeds. Only use for idempotent requests.
+ */
+export async function apiJsonWithRetry<T>(
+  url: string,
+  {
+    attempts = 3,
+    delayMs = 1_500,
+  }: { attempts?: number; delayMs?: number } = {},
+): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await apiJson<T>(url);
+    } catch (error) {
+      const transient =
+        error instanceof ApiError &&
+        (error.status === 0 || error.status >= 500);
+      if (!transient || attempt >= attempts) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delayMs * attempt));
+    }
+  }
+}
+
 /** POSTs JSON and yields newline-delimited JSON events as they stream in. */
 export async function* streamNdjson<T>(
   url: string,
