@@ -21,7 +21,7 @@ const ChartView = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[340px] w-full animate-pulse rounded-md bg-muted" />
+      <div className="h-[340px] w-full animate-pulse rounded-2xl bg-muted" />
     ),
   },
 );
@@ -59,7 +59,7 @@ export function AssistantMessage({
         </div>
 
         {hasChart && (
-          <div className="rounded-md border bg-card p-4">
+          <div className="rounded-3xl border bg-card p-5">
             {viz.title && (
               <div className="mb-3 text-lg font-medium leading-snug">
                 {stripEmDashes(viz.title)}
@@ -89,7 +89,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowData((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-accent"
+                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
                 aria-expanded={showData}
               >
                 <Table2 className="h-3.5 w-3.5" aria-hidden />{" "}
@@ -100,7 +100,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowHow((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-accent"
+                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
                 aria-expanded={showHow}
               >
                 <Workflow className="h-3.5 w-3.5" aria-hidden /> How I got this
@@ -110,7 +110,7 @@ export function AssistantMessage({
         )}
 
         {showHow && meta && (
-          <div className="space-y-3 rounded-md border bg-muted/40 p-4 text-sm">
+          <div className="space-y-3 rounded-3xl border bg-muted/40 p-5 text-sm">
             <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 {meta.sourceKind === "csv" ? (
@@ -139,7 +139,7 @@ export function AssistantMessage({
                 <div className="mb-1 text-xs font-medium text-muted-foreground">
                   Read-only query{meta.queries.length > 1 ? ` ${i + 1}` : ""}
                 </div>
-                <pre className="overflow-x-auto rounded-md border bg-background p-3 font-mono text-xs leading-relaxed">
+                <pre className="overflow-x-auto rounded-2xl border bg-background p-4 font-mono text-xs leading-relaxed">
                   {sql.trim()}
                 </pre>
               </div>
@@ -155,7 +155,7 @@ export function AssistantMessage({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(stripEmDashes(suggestion))}
-                className="rounded-md border bg-card px-2.5 py-1 text-[13px] hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
+                className="rounded-full border bg-card px-3.5 py-1 text-[13px] hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
               >
                 {stripEmDashes(suggestion)}
               </button>

@@ -12,7 +12,7 @@ export function DataTable({ table }: { table: ResultTable }) {
   );
   const rawColumns = table.columns.map((name) => RAW_NUMBER_COLUMN.test(name));
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className="overflow-hidden rounded-2xl border">
       <div className="max-h-80 overflow-auto">
         <table className="w-full border-collapse text-sm">
           <thead className="sticky top-0 bg-muted/90 backdrop-blur">

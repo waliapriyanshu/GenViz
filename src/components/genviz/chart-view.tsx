@@ -155,7 +155,7 @@ export function toVChartSpec(viz: Visualization): Record<string, any> | null {
           ...(series ? { seriesField: series } : {}),
           ...(viz.type === "histogram"
             ? { barGapInGroup: 0, bar: { style: { cornerRadius: 0 } } }
-            : { bar: { style: { cornerRadius: [4, 4, 0, 0] } } }),
+            : { bar: { style: { cornerRadius: [8, 8, 0, 0] } } }),
           axes: [
             bandAxis("bottom", viz.type === "histogram" ? xLabel : undefined),
             linearAxis("left", viz.type === "histogram" ? "Count" : undefined),
@@ -240,7 +240,7 @@ export function ChartView({ viz }: { viz: Visualization }) {
   if (!mounted)
     return (
       <div
-        className="w-full animate-pulse rounded-lg bg-muted"
+        className="w-full animate-pulse rounded-2xl bg-muted"
         style={{ height }}
       />
     );

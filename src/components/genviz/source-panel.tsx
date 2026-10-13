@@ -123,7 +123,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
           setDragging(false);
           void handleFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition ${dragging ? "border-primary bg-primary/5" : "border-border"}`}
+        className={`flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed p-8 text-center transition ${dragging ? "border-primary bg-primary/5" : "border-border"}`}
       >
         <Upload className="h-8 w-8 text-muted-foreground" aria-hidden />
         <div className="font-medium">Drop a CSV file here</div>
@@ -150,7 +150,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       </div>
 
       {busy && (
-        <div className="space-y-2 rounded-md border p-4" aria-live="polite">
+        <div className="space-y-2 rounded-3xl border p-5" aria-live="polite">
           <div className="truncate text-sm font-medium">
             {"fileName" in state ? state.fileName : ""}
           </div>
@@ -188,7 +188,7 @@ function UploadTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       )}
       {state.phase === "error" && (
         <div
-          className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+          className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
           role="alert"
         >
           {state.message}
@@ -264,7 +264,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
         <label htmlFor="pg-connection" className="text-sm font-medium">
           PostgreSQL connection string
         </label>
-        <div className="flex items-center gap-2 rounded-md border bg-background pr-1 focus-within:ring-2 focus-within:ring-primary/40">
+        <div className="flex items-center gap-2 rounded-full border bg-background pr-1.5 focus-within:ring-2 focus-within:ring-ring/50">
           <input
             id="pg-connection"
             type={reveal ? "text" : "password"}
@@ -276,12 +276,12 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
               setResult(null);
             }}
             placeholder="postgresql://user:password@host:5432/database?sslmode=require"
-            className="h-10 flex-1 bg-transparent px-3 font-mono text-sm outline-none"
+            className="h-11 flex-1 bg-transparent px-4 font-mono text-sm outline-none"
           />
           <button
             type="button"
             onClick={() => setReveal((v) => !v)}
-            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent"
             aria-label={
               reveal ? "Hide connection string" : "Show connection string"
             }
@@ -310,7 +310,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
           onChange={(e) => setName(e.target.value)}
           maxLength={80}
           placeholder="e.g. Sales DB"
-          className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+          className="h-11 w-full rounded-full border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-ring/50"
         />
       </div>
       <div className="flex gap-2">
@@ -328,7 +328,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       </div>
       {result && (
         <div
-          className="space-y-2 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm"
+          className="space-y-2 rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-sm"
           aria-live="polite"
         >
           <div className="flex items-center gap-2 font-medium text-emerald-700 dark:text-emerald-400">
@@ -343,7 +343,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
               {result.tables.slice(0, 12).map((t) => (
                 <span
                   key={t}
-                  className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs"
+                  className="rounded-full bg-muted px-2.5 py-0.5 font-mono text-xs"
                 >
                   {t}
                 </span>
@@ -359,7 +359,7 @@ function ConnectTab({ onReady }: { onReady: (source: ClientSource) => void }) {
       )}
       {error && (
         <div
-          className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+          className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
           role="alert"
         >
           {error}
@@ -410,7 +410,7 @@ export function SourcePanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="source-panel-title"
-        className="flex h-full w-full max-w-lg flex-col overflow-y-auto bg-background shadow-2xl animate-in slide-in-from-right"
+        className="flex h-full w-full max-w-lg flex-col overflow-y-auto rounded-l-[2rem] bg-background shadow-2xl animate-in slide-in-from-right"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b px-5 py-4">
@@ -420,7 +420,7 @@ export function SourcePanel({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1.5 hover:bg-accent"
+            className="rounded-full p-2 hover:bg-accent"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -439,7 +439,7 @@ export function SourcePanel({
                   return (
                     <li
                       key={source.id}
-                      className={`flex items-center gap-3 rounded-md border p-3 ${active ? "border-primary/50 bg-primary/5" : ""}`}
+                      className={`flex items-center gap-3 rounded-3xl border p-3 pl-4 ${active ? "border-primary/50 bg-primary/5" : ""}`}
                     >
                       {source.kind === "csv" ? (
                         <FileSpreadsheet className="h-5 w-5 shrink-0 text-muted-foreground" />
@@ -474,7 +474,7 @@ export function SourcePanel({
                       )}
                       <button
                         type="button"
-                        className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                        className="rounded-full p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
                         aria-label={`Remove ${source.name}`}
                         disabled={removing === source.id}
                         onClick={async () => {
@@ -507,7 +507,7 @@ export function SourcePanel({
 
           <section className="space-y-4">
             <div
-              className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1"
+              className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1"
               role="tablist"
             >
               {(
@@ -522,7 +522,7 @@ export function SourcePanel({
                   role="tab"
                   aria-selected={tab === key}
                   onClick={() => setTab(key)}
-                  className={`flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${tab === key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition ${tab === key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   <Icon className="h-4 w-4" /> {label}
                 </button>

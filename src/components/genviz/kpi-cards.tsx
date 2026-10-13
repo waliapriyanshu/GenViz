@@ -8,7 +8,7 @@ export function KpiCards({ viz }: { viz: Visualization }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {items.map((item) => (
-        <div key={item.label} className="rounded-md border bg-muted/40 p-4">
+        <div key={item.label} className="rounded-3xl border bg-muted/40 p-5">
           <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             {item.label}
           </div>

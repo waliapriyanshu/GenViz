@@ -37,9 +37,9 @@ export function SourceCard({
   disabled: boolean;
 }) {
   return (
-    <div className="rounded-md border bg-card p-5">
+    <div className="rounded-3xl border bg-card p-6">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-secondary text-foreground">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
           {source.kind === "csv" ? (
             <FileSpreadsheet className="h-5 w-5" />
           ) : (
@@ -81,7 +81,7 @@ export function SourceCard({
                 return (
                   <span
                     key={column.name}
-                    className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-mono text-[11px]"
+                    className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-mono text-[11px]"
                     title={`${column.kind}, ${column.role}`}
                   >
                     <Icon
@@ -95,7 +95,7 @@ export function SourceCard({
             : source.tables.slice(0, 18).map((table) => (
                 <span
                   key={table}
-                  className="rounded-md bg-muted px-2 py-0.5 font-mono text-[11px]"
+                  className="rounded-full bg-muted px-2.5 py-0.5 font-mono text-[11px]"
                 >
                   {table}
                 </span>
@@ -140,7 +140,7 @@ export function SourceCard({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(suggestion)}
-                className="rounded-md border bg-background px-3 py-1.5 text-sm hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
+                className="rounded-full border bg-background px-4 py-1.5 text-sm hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
               >
                 {suggestion}
               </button>
