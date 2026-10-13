@@ -357,7 +357,7 @@ export default function GenvizApp() {
               onClick={() =>
                 setPanel({ open: true, tab: active?.kind ?? "csv" })
               }
-              className="flex max-w-[60vw] items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
+              className="flex max-w-[60vw] items-center gap-2 rounded-full border px-4 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
               aria-label="Change data source"
             >
               <span
@@ -377,7 +377,7 @@ export default function GenvizApp() {
                 type="button"
                 onClick={newChat}
                 disabled={busy}
-                className="flex h-9 items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-accent disabled:opacity-50"
+                className="flex h-9 items-center gap-1.5 rounded-full px-3 text-sm text-muted-foreground hover:bg-accent disabled:opacity-50"
                 title="Start a new conversation"
               >
                 <MessageSquarePlus className="h-4 w-4" />{" "}
@@ -401,7 +401,7 @@ export default function GenvizApp() {
             <section className="pb-2 pt-6 sm:pt-14">
               <h1 className="text-balance text-4xl font-medium leading-[1.3] tracking-tight sm:text-5xl">
                 Ask your data a{" "}
-                <mark className="rounded-[2px] bg-highlight box-decoration-clone px-1 text-highlight-foreground">
+                <mark className="rounded-full bg-highlight box-decoration-clone px-3 text-highlight-foreground">
                   question
                 </mark>
                 .
@@ -410,7 +410,7 @@ export default function GenvizApp() {
                 Upload a CSV or connect a PostgreSQL database, then ask in plain
                 English. Genviz answers with a chart and the numbers behind it.
               </p>
-              <ul className="mt-10 divide-y border-y">
+              <ul className="mt-10 space-y-3">
                 {[
                   {
                     title: "Upload a CSV",
@@ -435,9 +435,9 @@ export default function GenvizApp() {
                       type="button"
                       onClick={option.onClick}
                       disabled={option.loading}
-                      className="group flex w-full items-center gap-4 px-1 py-4 text-left transition-colors hover:bg-accent/60 disabled:opacity-70 sm:gap-6"
+                      className="group flex w-full items-center gap-4 rounded-[2rem] border bg-card py-3 pl-3 pr-3 text-left transition-colors hover:border-foreground/40 disabled:opacity-70 sm:gap-5"
                     >
-                      <span className="w-6 font-mono text-xs text-muted-foreground">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary font-mono text-xs text-muted-foreground">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span className="min-w-0 flex-1">
@@ -448,11 +448,13 @@ export default function GenvizApp() {
                           {option.text}
                         </span>
                       </span>
-                      {option.loading ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
-                      )}
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground transition-colors group-hover:bg-highlight group-hover:text-highlight-foreground">
+                        {option.loading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ArrowRight className="h-4 w-4" />
+                        )}
+                      </span>
                     </button>
                   </li>
                 ))}
@@ -466,7 +468,7 @@ export default function GenvizApp() {
               {messages.map((message) =>
                 message.role === "user" ? (
                   <div key={message.id} className="flex justify-end">
-                    <div className="max-w-[85%] whitespace-pre-line rounded-lg border bg-secondary px-4 py-2.5">
+                    <div className="max-w-[85%] whitespace-pre-line rounded-3xl border bg-secondary px-5 py-3">
                       {message.content}
                     </div>
                   </div>

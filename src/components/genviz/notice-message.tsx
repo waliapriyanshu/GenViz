@@ -17,7 +17,7 @@ export function NoticeMessage({
   if (tone === "rate_limit") {
     return (
       <div
-        className="flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
+        className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
         role="status"
       >
         <Hourglass
@@ -50,7 +50,7 @@ export function NoticeMessage({
   }
   return (
     <div
-      className="flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm"
+      className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
       role="alert"
     >
       <AlertCircle
