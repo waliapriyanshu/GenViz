@@ -357,7 +357,7 @@ export default function GenvizApp() {
               onClick={() =>
                 setPanel({ open: true, tab: active?.kind ?? "csv" })
               }
-              className="flex max-w-[60vw] items-center gap-2 rounded-full border px-4 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
+              className="flex min-w-0 max-w-[60vw] items-center gap-2 rounded-full border px-4 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
               aria-label="Change data source"
             >
               <span
@@ -377,7 +377,7 @@ export default function GenvizApp() {
                 type="button"
                 onClick={newChat}
                 disabled={busy}
-                className="flex h-9 items-center gap-1.5 rounded-full px-3 text-sm text-muted-foreground hover:bg-accent disabled:opacity-50"
+                className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm text-muted-foreground hover:bg-accent disabled:opacity-50"
                 title="Start a new conversation"
               >
                 <MessageSquarePlus className="h-4 w-4" />{" "}
