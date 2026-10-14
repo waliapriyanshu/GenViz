@@ -119,7 +119,7 @@ export function Composer({
               submit();
             }
           }}
-          placeholder={disabledReason ?? "Ask about your data…"}
+          placeholder={disabledReason ?? "Ask a question…"}
           disabled={!!disabledReason}
           maxLength={1000}
           className="max-h-40 min-h-[44px] flex-1 resize-none bg-transparent px-4 py-2.5 text-[15px] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"

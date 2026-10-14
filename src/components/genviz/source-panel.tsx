@@ -410,7 +410,7 @@ export function SourcePanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="source-panel-title"
-        className="flex h-full w-full max-w-lg flex-col overflow-y-auto rounded-l-[2rem] bg-background shadow-2xl animate-in slide-in-from-right"
+        className="flex h-full w-full max-w-lg flex-col overflow-y-auto bg-background shadow-2xl animate-in slide-in-from-right sm:rounded-l-[2rem]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b px-5 py-4">
