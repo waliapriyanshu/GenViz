@@ -11,6 +11,7 @@
 ## Table of contents
 
 - [Overview](#overview)
+- [Screenshots](#screenshots)
 - [Key features](#key-features)
 - [Use cases](#use-cases)
 - [Architecture](#architecture)
@@ -38,6 +39,53 @@ The project is built around four principles:
 - **Grounded.** Every number in an answer originates from a real query result, never from the language model's own arithmetic.
 - **Transparent.** Each answer can show the exact SQL, the steps taken, the row count, and the execution time.
 - **Economical.** It runs on open-weight models through Groq's free tier by default, and the provider is configurable.
+
+## Screenshots
+
+### Light and dark themes
+
+| Light | Dark |
+| --- | --- |
+| ![The Genviz home screen in the light theme](docs/screenshots/home-light.png) | ![The Genviz home screen in the dark theme](docs/screenshots/home-dark.png) |
+
+The theme follows the system setting and can be changed from the header.
+
+### Connect a data source
+
+| Load a CSV and get suggested questions | Connect a PostgreSQL database |
+| --- | --- |
+| ![A loaded CSV file with its detected columns and suggested questions](docs/screenshots/source-card.png) | ![The data sources panel with the PostgreSQL connection form](docs/screenshots/data-sources-panel.png) |
+
+Genviz detects column types from the uploaded file and suggests questions that the data can answer. Database connections are tested first and stored encrypted on the server.
+
+### Answers with charts
+
+![A line chart answering the question "Show revenue by month"](docs/screenshots/chart-line.png)
+
+Each answer combines a short written summary, a chart chosen from the shape of the result, and quick access to the underlying table.
+
+![A bar chart comparing revenue across sales channels in the dark theme](docs/screenshots/chart-channel-dark.png)
+
+### Transparency
+
+![The data table and the details panel showing the steps taken and the read-only SQL query](docs/screenshots/how-i-got-this.png)
+
+**View data** shows the result table. **How I got this** shows the data source, the number of rows returned, the execution time, the steps taken, and the exact read-only SQL that was run.
+
+### Mobile
+
+<table>
+  <tr>
+    <th>Light</th>
+    <th>Dark</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/mobile-light.png" alt="A chart answer on a phone in the light theme" width="300"></td>
+    <td><img src="docs/screenshots/mobile-dark.png" alt="A chart answer on a phone in the dark theme" width="300"></td>
+  </tr>
+</table>
+
+The layout adapts from small phones to wide desktop screens.
 
 ## Key features
 
@@ -322,6 +370,7 @@ Please report security issues privately through the repository's **Security** ta
 
 ```
 .
+├── docs/screenshots/        Images used in this README
 ├── prisma/                  Application schema (schema "genviz")
 ├── public/samples/          Bundled sample dataset
 ├── src/
