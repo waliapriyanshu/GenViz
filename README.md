@@ -2,7 +2,6 @@
 
 **Ask questions about a CSV file or a PostgreSQL database in plain English and receive a grounded answer, a chart, and the data behind it.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)](https://www.typescriptlang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-supported-336791)](https://www.postgresql.org)
