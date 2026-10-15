@@ -355,14 +355,6 @@ Contributions are welcome.
 4. Never commit credentials, `.env` files, or database dumps.
 5. Open a pull request that describes the change and its motivation.
 
-## License
-
-Released under the [MIT License](LICENSE).
-
-### Third-party notices
-
-The logo mark is an unmodified icon from IBM's Carbon Design System, licensed under Apache-2.0. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
-
 ### Acknowledgments
 
 Genviz builds on [Next.js](https://nextjs.org), the [Vercel AI SDK](https://ai-sdk.dev), [Groq](https://groq.com), [VisActor VChart](https://www.visactor.io/vchart), [libpg-query](https://github.com/pganalyze/libpg_query), [Prisma](https://www.prisma.io), and [Tailwind CSS](https://tailwindcss.com).
