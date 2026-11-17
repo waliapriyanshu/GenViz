@@ -21,7 +21,7 @@ const ChartView = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[340px] w-full animate-pulse rounded-2xl bg-muted" />
+      <div className="h-[340px] w-full animate-pulse rounded-[1.5rem] bg-muted" />
     ),
   },
 );
@@ -44,14 +44,14 @@ export function AssistantMessage({
   const meta = payload.metadata;
 
   return (
-    <div className="min-w-0">
-      <div className="space-y-4">
+    <div className="min-w-0 animate-rise">
+      <div className="space-y-5">
         <div
-          className={`flex items-start gap-2 whitespace-pre-line text-[17px] leading-relaxed ${isProblem ? "text-foreground/90" : ""}`}
+          className={`flex items-start gap-2 whitespace-pre-line text-lg leading-relaxed tracking-[-0.005em] sm:text-xl sm:leading-relaxed ${isProblem ? "text-foreground/90" : ""}`}
         >
           {isProblem && (
             <AlertTriangle
-              className="mt-1 h-4 w-4 shrink-0 text-amber-500"
+              className="mt-1.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400"
               aria-hidden
             />
           )}
@@ -59,9 +59,9 @@ export function AssistantMessage({
         </div>
 
         {hasChart && (
-          <div className="rounded-3xl border bg-card p-5">
+          <div className="rounded-[2rem] border bg-card p-5 shadow-lift sm:p-7">
             {viz.title && (
-              <div className="mb-3 text-lg font-medium leading-snug">
+              <div className="mb-4 text-base font-semibold leading-snug sm:text-lg">
                 {stripEmDashes(viz.title)}
               </div>
             )}
@@ -89,7 +89,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowData((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
+                className="tap inline-flex min-h-9 items-center gap-1.5 rounded-full border border-input bg-card px-4 text-sm font-medium transition-colors hover:bg-foreground hover:text-background"
                 aria-expanded={showData}
               >
                 <Table2 className="h-3.5 w-3.5" aria-hidden />{" "}
@@ -100,7 +100,7 @@ export function AssistantMessage({
               <button
                 type="button"
                 onClick={() => setShowHow((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent"
+                className="tap inline-flex min-h-9 items-center gap-1.5 rounded-full border border-input bg-card px-4 text-sm font-medium transition-colors hover:bg-foreground hover:text-background"
                 aria-expanded={showHow}
               >
                 <Workflow className="h-3.5 w-3.5" aria-hidden /> How I got this
@@ -110,7 +110,7 @@ export function AssistantMessage({
         )}
 
         {showHow && meta && (
-          <div className="space-y-3 rounded-3xl border bg-muted/40 p-5 text-sm">
+          <div className="animate-rise space-y-3 rounded-[2rem] bg-secondary p-5 text-sm sm:p-6">
             <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 {meta.sourceKind === "csv" ? (
@@ -139,7 +139,7 @@ export function AssistantMessage({
                 <div className="mb-1 text-xs font-medium text-muted-foreground">
                   Read-only query{meta.queries.length > 1 ? ` ${i + 1}` : ""}
                 </div>
-                <pre className="overflow-x-auto rounded-2xl border bg-background p-4 font-mono text-xs leading-relaxed">
+                <pre className="overflow-x-auto rounded-[1.5rem] bg-background p-4 font-mono text-xs leading-relaxed">
                   {sql.trim()}
                 </pre>
               </div>
@@ -155,7 +155,7 @@ export function AssistantMessage({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(stripEmDashes(suggestion))}
-                className="rounded-full border bg-card px-3.5 py-1 text-[13px] hover:border-foreground/50 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
+                className="tap rounded-full border bg-card px-4 py-1.5 text-sm transition-colors hover:border-foreground/60 hover:shadow-[inset_0_-6px_0_hsl(var(--highlight)/0.55)] disabled:opacity-50"
               >
                 {stripEmDashes(suggestion)}
               </button>

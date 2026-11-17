@@ -19,7 +19,10 @@ export function ProgressSteps({ stages }: { stages: ProgressStage[] }) {
   const unique = stages.filter((stage, i) => stages.indexOf(stage) === i);
   const current = stages[stages.length - 1];
   return (
-    <div className="flex flex-col gap-1.5 py-1" aria-live="polite">
+    <div
+      className="flex w-fit max-w-full animate-rise flex-col gap-2 rounded-[1.75rem] border bg-card px-5 py-4 shadow-lift"
+      aria-live="polite"
+    >
       {unique.map((stage) => {
         const active = stage === current;
         return (
@@ -34,7 +37,7 @@ export function ProgressSteps({ stages }: { stages: ProgressStage[] }) {
               />
             ) : (
               <Check
-                className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                className="h-4 w-4 text-emerald-700 dark:text-emerald-400"
                 aria-hidden
               />
             )}

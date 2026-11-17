@@ -69,6 +69,10 @@ const config = {
           foreground: "hsl(var(--highlight-foreground))",
         },
       },
+      boxShadow: {
+        lift: "var(--lift)",
+        float: "var(--float)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -79,12 +83,17 @@ const config = {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
+        rise: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
       },
       animation: {
+        rise: "rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

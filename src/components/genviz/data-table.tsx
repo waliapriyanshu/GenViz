@@ -12,16 +12,16 @@ export function DataTable({ table }: { table: ResultTable }) {
   );
   const rawColumns = table.columns.map((name) => RAW_NUMBER_COLUMN.test(name));
   return (
-    <div className="overflow-hidden rounded-2xl border">
+    <div className="overflow-hidden rounded-[1.75rem] border bg-card">
       <div className="max-h-80 overflow-auto">
         <table className="w-full border-collapse text-sm">
-          <thead className="sticky top-0 bg-muted/90 backdrop-blur">
+          <thead className="sticky top-0 bg-muted">
             <tr>
               {table.columns.map((column, i) => (
                 <th
                   key={`${column}-${i}`}
                   scope="col"
-                  className={`whitespace-nowrap px-3 py-2 font-medium text-muted-foreground ${numericColumns[i] ? "text-right" : "text-left"}`}
+                  className={`whitespace-nowrap px-4 py-2.5 font-medium text-muted-foreground ${numericColumns[i] ? "text-right" : "text-left"}`}
                 >
                   {humanizeKey(column)}
                 </th>
@@ -34,7 +34,7 @@ export function DataTable({ table }: { table: ResultTable }) {
                 {row.map((cell, c) => (
                   <td
                     key={c}
-                    className={`whitespace-nowrap px-3 py-1.5 ${numericColumns[c] ? "text-right font-mono text-[13px] tabular-nums" : ""}`}
+                    className={`whitespace-nowrap px-4 py-2 ${numericColumns[c] ? "text-right font-mono text-[13px] tabular-nums" : ""}`}
                   >
                     {rawColumns[c] && typeof cell === "number"
                       ? String(cell)
@@ -46,7 +46,7 @@ export function DataTable({ table }: { table: ResultTable }) {
           </tbody>
         </table>
       </div>
-      <div className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+      <div className="border-t bg-muted/50 px-4 py-2 text-xs text-muted-foreground">
         {table.truncated
           ? `Showing ${table.rows.length.toLocaleString()} of ${table.totalRows.toLocaleString()} rows`
           : `${table.totalRows.toLocaleString()} row${table.totalRows === 1 ? "" : "s"}`}

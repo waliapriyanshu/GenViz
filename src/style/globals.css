@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "./dot-matrix.css";
 
 @layer base {
   /* Graphite and paper with a lime highlight (the dark theme's accent). */
@@ -14,10 +13,10 @@
     --popover-foreground: 0 0% 7%;
     --primary: 0 0% 7%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 60 7% 92%;
+    --secondary: 60 7% 91%;
     --secondary-foreground: 0 0% 7%;
     --muted: 60 7% 92%;
-    --muted-foreground: 0 0% 36%;
+    --muted-foreground: 0 0% 34%;
     --accent: 60 7% 92%;
     --accent-foreground: 0 0% 7%;
     --destructive: 0 70% 42%;
@@ -28,21 +27,25 @@
     --highlight: 74 87% 58%;
     --highlight-foreground: 0 0% 7%;
     --radius: 1rem;
+    --lift: 0 1px 0 hsl(0 0% 100% / 0.8) inset, 0 1px 2px hsl(0 0% 0% / 0.05),
+      0 8px 24px -12px hsl(0 0% 0% / 0.14);
+    --float: 0 2px 4px hsl(0 0% 0% / 0.05),
+      0 16px 40px -14px hsl(0 0% 0% / 0.22);
   }
 
   .dark {
     --background: 0 0% 5%;
     --foreground: 60 8% 92%;
-    --card: 0 0% 8%;
+    --card: 0 0% 9%;
     --card-foreground: 60 8% 92%;
-    --popover: 0 0% 8%;
+    --popover: 0 0% 9%;
     --popover-foreground: 60 8% 92%;
     --primary: 74 87% 58%;
     --primary-foreground: 76 100% 5%;
     --secondary: 0 0% 12%;
     --secondary-foreground: 60 8% 92%;
     --muted: 0 0% 10%;
-    --muted-foreground: 60 2% 60%;
+    --muted-foreground: 60 2% 64%;
     --accent: 0 0% 12%;
     --accent-foreground: 60 8% 92%;
     --destructive: 0 66% 54%;
@@ -52,6 +55,10 @@
     --ring: 74 87% 58%;
     --highlight: 74 87% 58%;
     --highlight-foreground: 0 0% 7%;
+    --lift: 0 1px 0 hsl(0 0% 100% / 0.04) inset,
+      0 8px 24px -14px hsl(0 0% 0% / 0.8);
+    --float: 0 0 0 1px hsl(0 0% 100% / 0.04),
+      0 18px 44px -16px hsl(0 0% 0% / 0.9);
   }
 }
 
@@ -68,5 +75,43 @@
   ::selection {
     background: hsl(var(--highlight));
     color: hsl(var(--highlight-foreground));
+  }
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    overflow-wrap: anywhere;
+    font-feature-settings:
+      "ss01",
+      "tnum" 0;
+  }
+}
+
+@layer utilities {
+  .tap {
+    min-height: 2.75rem;
+  }
+  @media (hover: hover) {
+    .tap {
+      min-height: 2.25rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

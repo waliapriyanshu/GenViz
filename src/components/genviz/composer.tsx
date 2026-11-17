@@ -102,7 +102,7 @@ export function Composer({
   return (
     <div className="space-y-2">
       <div
-        className={`flex items-end gap-2 rounded-[1.75rem] border bg-card p-2 transition focus-within:border-foreground/40 focus-within:ring-1 focus-within:ring-ring/60 ${blocked ? "opacity-90" : ""}`}
+        className={`flex items-end gap-2 rounded-[2rem] border border-input bg-card p-2 shadow-float transition focus-within:border-foreground/60 focus-within:ring-2 focus-within:ring-ring/30 ${blocked ? "opacity-90" : ""}`}
       >
         <label htmlFor="genviz-question" className="sr-only">
           Ask a question about your data
@@ -122,14 +122,14 @@ export function Composer({
           placeholder={disabledReason ?? "Ask a question…"}
           disabled={!!disabledReason}
           maxLength={1000}
-          className="max-h-40 min-h-[44px] flex-1 resize-none bg-transparent px-4 py-2.5 text-[15px] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+          className="max-h-40 min-h-[48px] min-w-0 flex-1 resize-none bg-transparent px-3 py-3 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed sm:px-4"
         />
         {speechSupported && (
           <button
             type="button"
             onClick={toggleMic}
             disabled={!!disabledReason}
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition ${listening ? "bg-destructive text-destructive-foreground" : "text-muted-foreground hover:bg-accent"} disabled:opacity-50`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition ${listening ? "bg-destructive text-destructive-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"} disabled:opacity-50`}
             aria-label={listening ? "Stop voice input" : "Ask with your voice"}
             title={listening ? "Stop voice input" : "Ask with your voice"}
           >
@@ -144,7 +144,7 @@ export function Composer({
           type="button"
           onClick={submit}
           disabled={!canSend}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background transition hover:bg-foreground/85 disabled:bg-muted disabled:text-muted-foreground"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:scale-105 hover:bg-primary/90 active:scale-95 disabled:scale-100 disabled:bg-muted disabled:text-muted-foreground"
           aria-label="Send question"
         >
           {busy ? (
@@ -163,7 +163,7 @@ export function Composer({
         <span
           className={
             coolingDown
-              ? "font-medium tabular-nums text-amber-600 dark:text-amber-400"
+              ? "font-medium tabular-nums text-amber-700 dark:text-amber-400"
               : ""
           }
         >

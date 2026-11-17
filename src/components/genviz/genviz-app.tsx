@@ -343,29 +343,27 @@ export default function GenvizApp() {
 
   return (
     <div className="flex h-[100dvh] flex-col bg-background">
-      <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
+      <header className="z-30 px-3 pt-3 sm:px-4">
+        <div className="mx-auto flex h-14 max-w-4xl items-center gap-2 rounded-full border bg-card py-1.5 pl-2 pr-1.5 shadow-lift sm:gap-3">
           <div className="flex items-center gap-2">
-            <LogoMark className="h-6 w-6 shrink-0 text-primary" />
-            <span className="hidden text-xl font-semibold tracking-tight sm:inline">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+              <LogoMark className="h-6 w-6" />
+            </span>
+            <span className="hidden text-lg font-semibold tracking-tight min-[400px]:inline">
               Genviz
             </span>
           </div>
-          <div className="ml-auto flex min-w-0 items-center gap-2">
+          <div className="ml-auto flex min-w-0 items-center gap-1.5">
             <button
               type="button"
               onClick={() =>
                 setPanel({ open: true, tab: active?.kind ?? "csv" })
               }
-              className="flex min-w-0 max-w-[60vw] items-center gap-2 rounded-full border px-4 py-1.5 text-sm hover:bg-accent sm:max-w-sm"
+              className="flex h-11 min-w-0 max-w-[55vw] items-center gap-2 rounded-full bg-secondary pl-4 pr-3 text-sm transition-colors hover:bg-accent sm:h-10 sm:max-w-sm"
               aria-label="Change data source"
             >
-              <span
-                className={`h-2 w-2 shrink-0 rounded-full ${active ? "bg-emerald-500" : "bg-muted-foreground/40"}`}
-                aria-hidden
-              />
               <span className="hidden text-muted-foreground sm:inline">
-                Data source
+                Data
               </span>
               <span className="truncate font-medium">
                 {active ? sourceLabel(active) : "Connect data"}
@@ -377,7 +375,7 @@ export default function GenvizApp() {
                 type="button"
                 onClick={newChat}
                 disabled={busy}
-                className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm text-muted-foreground hover:bg-accent disabled:opacity-50"
+                className="flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50 sm:h-10"
                 title="Start a new conversation"
               >
                 <MessageSquarePlus className="h-4 w-4" />{" "}
@@ -390,7 +388,7 @@ export default function GenvizApp() {
       </header>
 
       <main ref={scrollRef} className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl space-y-8 px-4 py-8">
+        <div className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6 sm:py-10">
           {booting ? (
             <div className="flex justify-center py-24 text-muted-foreground">
               <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading" />
@@ -398,19 +396,19 @@ export default function GenvizApp() {
           ) : bootError ? (
             <NoticeMessage tone="error" message={bootError} />
           ) : !active ? (
-            <section className="pb-2 pt-6 sm:pt-14">
-              <h1 className="text-balance text-4xl font-medium leading-[1.3] tracking-tight sm:text-5xl">
+            <section className="animate-rise pb-2 pt-4 sm:pt-12">
+              <h1 className="min-w-0 text-balance break-words text-5xl font-medium leading-[1.12] tracking-tight sm:text-6xl lg:text-7xl">
                 Ask your data a{" "}
-                <mark className="rounded-full bg-highlight box-decoration-clone px-3 text-highlight-foreground">
+                <mark className="rounded-full bg-highlight box-decoration-clone px-4 text-highlight-foreground">
                   question
                 </mark>
                 .
               </h1>
-              <p className="mt-4 max-w-xl text-pretty text-[17px] leading-relaxed text-muted-foreground">
-                Upload a CSV or connect a PostgreSQL database, then ask in plain
-                English. Genviz answers with a chart and the numbers behind it.
+              <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
+                Upload a CSV or connect PostgreSQL, then ask in plain English.
+                Genviz answers with a chart and the numbers behind it.
               </p>
-              <ul className="mt-10 space-y-3">
+              <ul className="mt-10 grid gap-3 md:grid-cols-3">
                 {[
                   {
                     title: "Upload a CSV",
@@ -419,7 +417,7 @@ export default function GenvizApp() {
                   },
                   {
                     title: "Connect PostgreSQL",
-                    text: "Query a live database through a read-only connection.",
+                    text: "Read-only access to a live database.",
                     onClick: () => setPanel({ open: true, tab: "postgres" }),
                   },
                   {
@@ -430,29 +428,29 @@ export default function GenvizApp() {
                     loading: !!sampleState,
                   },
                 ].map((option, index) => (
-                  <li key={option.title}>
+                  <li key={option.title} className="min-w-0">
                     <button
                       type="button"
                       onClick={option.onClick}
                       disabled={option.loading}
-                      className="group flex w-full items-center gap-4 rounded-[2rem] border bg-card py-3 pl-3 pr-3 text-left transition-colors hover:border-foreground/40 disabled:opacity-70 sm:gap-5"
+                      className="group flex h-full w-full flex-row items-center gap-4 rounded-[2rem] bg-card p-3 pr-4 text-left shadow-lift transition-colors hover:bg-foreground hover:text-background disabled:opacity-70 md:min-h-[11rem] md:flex-col md:items-start md:justify-between md:rounded-[2.5rem] md:p-5"
                     >
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary font-mono text-xs text-muted-foreground">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary font-mono text-xs text-secondary-foreground">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-medium">
+                      <span className="min-w-0 flex-1 md:flex-none">
+                        <span className="block text-lg font-medium leading-tight">
                           {option.title}
                         </span>
-                        <span className="mt-0.5 block text-sm text-muted-foreground">
+                        <span className="mt-1 block text-sm text-muted-foreground transition-colors group-hover:text-background/70">
                           {option.text}
                         </span>
                       </span>
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground transition-colors group-hover:bg-highlight group-hover:text-highlight-foreground">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary text-foreground transition-colors group-hover:bg-highlight group-hover:text-highlight-foreground md:self-end">
                         {option.loading ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <ArrowRight className="h-4 w-4" />
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                         )}
                       </span>
                     </button>
@@ -468,7 +466,7 @@ export default function GenvizApp() {
               {messages.map((message) =>
                 message.role === "user" ? (
                   <div key={message.id} className="flex justify-end">
-                    <div className="max-w-[85%] whitespace-pre-line rounded-3xl border bg-secondary px-5 py-3">
+                    <div className="max-w-[85%] animate-rise whitespace-pre-line rounded-[1.75rem] rounded-br-lg bg-primary px-5 py-3 text-primary-foreground">
                       {message.content}
                     </div>
                   </div>
@@ -498,8 +496,8 @@ export default function GenvizApp() {
         </div>
       </main>
 
-      <footer className="border-t bg-background/95">
-        <div className="mx-auto max-w-3xl px-4 py-3">
+      <footer className="pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="mx-auto max-w-4xl px-3 pt-1 sm:px-6">
           <Composer
             value={input}
             onChange={setInput}
@@ -507,7 +505,7 @@ export default function GenvizApp() {
             busy={busy}
             cooldownUntil={cooldownUntil}
             disabledReason={
-              !active && !booting ? "Connect data to start" : undefined
+              !active && !booting ? "Connect data first" : undefined
             }
           />
         </div>
