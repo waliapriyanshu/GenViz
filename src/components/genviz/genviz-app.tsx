@@ -362,7 +362,7 @@ export default function GenvizApp() {
               className="flex h-11 min-w-0 max-w-[55vw] items-center gap-2 rounded-full bg-secondary pl-4 pr-3 text-sm transition-colors hover:bg-accent sm:h-10 sm:max-w-sm"
               aria-label="Change data source"
             >
-              <span className="hidden text-muted-foreground sm:inline">
+              <span className="hidden shrink-0 whitespace-nowrap text-muted-foreground sm:inline">
                 Data
               </span>
               <span className="truncate font-medium">
