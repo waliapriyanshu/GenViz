@@ -1,4 +1,5 @@
 import "server-only";
+import { UserError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -69,6 +70,26 @@ export function createMemoryCooldownStore(
       return remaining(key);
     },
   };
+}
+
+/**
+ * Claims `key` for `seconds` or throws a 429. The message reads
+ * "Please wait Ns <suffix>." so each route keeps its own wording.
+ */
+export async function enforceCooldown(
+  key: string,
+  seconds: number,
+  suffix: string,
+  store: CooldownStore = postgresCooldownStore,
+): Promise<void> {
+  const claim = await store.claim(key, seconds);
+  if (!claim.ok)
+    throw new UserError(
+      "rate_limited",
+      `Please wait ${claim.retryAfterSeconds}s ${suffix}.`,
+      429,
+      { retryAfterSeconds: claim.retryAfterSeconds },
+    );
 }
 
 export interface QueryLimiterConfig {

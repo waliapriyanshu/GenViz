@@ -9,6 +9,7 @@ import {
   claimQuerySlot,
   createMemoryCooldownStore,
   currentWait,
+  enforceCooldown,
   recordProviderRateLimit,
 } from "@/lib/security/rate-limit";
 
@@ -150,5 +151,34 @@ describe("provider error classification", () => {
     expect(classifyProviderError(new Error("fetch failed"))).toEqual({
       kind: "unavailable",
     });
+  });
+});
+
+describe("enforceCooldown", () => {
+  it("lets the first request through and blocks the next one with a 429", async () => {
+    const time = clock();
+    const store = createMemoryCooldownStore(time.now);
+    await expect(
+      enforceCooldown("upload-ip:a", 3, "before uploading another file", store),
+    ).resolves.toBeUndefined();
+    await expect(
+      enforceCooldown("upload-ip:a", 3, "before uploading another file", store),
+    ).rejects.toMatchObject({
+      code: "rate_limited",
+      status: 429,
+      message: "Please wait 3s before uploading another file.",
+      details: { retryAfterSeconds: 3 },
+    });
+  });
+
+  it("allows the key again once the cooldown has passed, and keys are independent", async () => {
+    const time = clock();
+    const store = createMemoryCooldownStore(time.now);
+    await enforceCooldown("conn-test:a", 3, "before testing again", store);
+    await enforceCooldown("conn-test:b", 3, "before testing again", store);
+    time.advance(3);
+    await expect(
+      enforceCooldown("conn-test:a", 3, "before testing again", store),
+    ).resolves.toBeUndefined();
   });
 });

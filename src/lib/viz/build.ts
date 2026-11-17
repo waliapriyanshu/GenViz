@@ -67,16 +67,20 @@ function tableViz(title: string, notes: string[]): Visualization {
   return { type: "table", title, data: [], config: {}, notes };
 }
 
+/** Long text (documents, JSON blobs) would bloat the stored answer and the response. */
+const MAX_CELL_CHARS = 500;
+
+function tableCell(value: unknown): unknown {
+  if (typeof value === "number" && !Number.isFinite(value)) return null;
+  if (typeof value === "string" && value.length > MAX_CELL_CHARS)
+    return `${value.slice(0, MAX_CELL_CHARS)}…`;
+  return value ?? null;
+}
+
 export function buildTable(result: TabularResult, maxRows = 200): ResultTable {
   return {
     columns: result.columns.map((c) => c.name),
-    rows: result.rows
-      .slice(0, maxRows)
-      .map((row) =>
-        row.map((v) =>
-          typeof v === "number" && !Number.isFinite(v) ? null : (v ?? null),
-        ),
-      ),
+    rows: result.rows.slice(0, maxRows).map((row) => row.map(tableCell)),
     totalRows: result.rows.length,
     truncated: result.rows.length > maxRows,
   };

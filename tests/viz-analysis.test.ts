@@ -7,7 +7,11 @@ import {
   histogramBins,
 } from "@/lib/analysis/analyze";
 import type { TabularResult } from "@/lib/analysis/shape";
-import { buildVisualization, sanitizeVisualization } from "@/lib/viz/build";
+import {
+  buildTable,
+  buildVisualization,
+  sanitizeVisualization,
+} from "@/lib/viz/build";
 
 const monthly: TabularResult = {
   columns: [
@@ -505,5 +509,44 @@ describe("fallback text for a raw numeric column", () => {
       "Revenue ranges from $10 to $1,000, with a median of $30 and an average of $220 across 5 rows.",
     );
     expect(checkGrounding(text, [result.rows, facts]).grounded).toBe(true);
+  });
+});
+
+describe("buildTable", () => {
+  it("shortens very long text cells so one row cannot bloat the answer", () => {
+    const table = buildTable({
+      columns: [
+        { name: "id", kind: "number" },
+        { name: "body", kind: "text" },
+      ],
+      rows: [[1, "x".repeat(5_000)]],
+    });
+    const cell = table.rows[0]![1] as string;
+    expect(cell.length).toBe(501);
+    expect(cell.endsWith("…")).toBe(true);
+    expect(table.rows[0]![0]).toBe(1);
+  });
+
+  it("leaves normal values alone and turns non-finite numbers and undefined into null", () => {
+    const table = buildTable({
+      columns: [
+        { name: "a", kind: "text" },
+        { name: "b", kind: "number" },
+        { name: "c", kind: "text" },
+      ],
+      rows: [["short text", Number.NaN, undefined]],
+    });
+    expect(table.rows[0]).toEqual(["short text", null, null]);
+  });
+
+  it("keeps at most the first 200 rows and reports the real total", () => {
+    const rows = Array.from({ length: 250 }, (_, i) => [i]);
+    const table = buildTable({
+      columns: [{ name: "n", kind: "number" }],
+      rows,
+    });
+    expect(table.rows).toHaveLength(200);
+    expect(table.totalRows).toBe(250);
+    expect(table.truncated).toBe(true);
   });
 });

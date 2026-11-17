@@ -28,7 +28,20 @@ import {
   withRowLimit,
 } from "@/lib/data/sql-guard";
 import { UserError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 import { decryptSecret } from "@/lib/security/crypto";
+
+const MAX_SOURCES_PER_SESSION = 25;
+
+/** Stops one browser session from piling up data sources (and uploaded tables). */
+export async function assertSourceQuota(ownerId: string): Promise<void> {
+  const count = await prisma.source.count({ where: { ownerId } });
+  if (count >= MAX_SOURCES_PER_SESSION)
+    throw new UserError(
+      "bad_request",
+      "You have too many data sources. Remove one before adding another.",
+    );
+}
 
 export interface CsvDetails {
   fileName: string;
@@ -67,6 +80,35 @@ export type RunOutcome =
       message: string;
       sql: string;
     };
+
+type RejectedGuard = Extract<
+  Awaited<ReturnType<typeof guardSql>>,
+  { ok: false }
+>;
+
+function rejected(guard: RejectedGuard, sql: string): RunOutcome {
+  return {
+    ok: false,
+    kind: "rejected",
+    code: guard.code,
+    message: guard.message,
+    sql,
+  };
+}
+
+function failed(error: unknown, sql: string): RunOutcome {
+  const err =
+    error instanceof ExecutionError
+      ? error
+      : new ExecutionError("query_error", String(error));
+  return {
+    ok: false,
+    kind: "failed",
+    code: err.code,
+    message: err.message,
+    sql,
+  };
+}
 
 export interface DataSourceRuntime {
   id: string;
@@ -217,14 +259,7 @@ function csvRuntime(source: Source): DataSourceRuntime {
     },
     async run(sql) {
       const guarded = await guardSql(sql, allowed);
-      if (!guarded.ok)
-        return {
-          ok: false,
-          kind: "rejected",
-          code: guarded.code,
-          message: guarded.message,
-          sql,
-        };
+      if (!guarded.ok) return rejected(guarded, sql);
       const { readerRole } = await ensureDataSchema();
       const finalSql = withRowLimit(
         guarded.sql,
@@ -240,17 +275,7 @@ function csvRuntime(source: Source): DataSourceRuntime {
         });
         return { ok: true, result, sql: guarded.sql };
       } catch (error) {
-        const err =
-          error instanceof ExecutionError
-            ? error
-            : new ExecutionError("query_error", String(error));
-        return {
-          ok: false,
-          kind: "failed",
-          code: err.code,
-          message: err.message,
-          sql: guarded.sql,
-        };
+        return failed(error, guarded.sql);
       }
     },
   };
@@ -359,14 +384,7 @@ function postgresRuntime(source: Source): DataSourceRuntime {
     },
     async run(sql) {
       const guarded = await guardSql(sql, allowed);
-      if (!guarded.ok)
-        return {
-          ok: false,
-          kind: "rejected",
-          code: guarded.code,
-          message: guarded.message,
-          sql,
-        };
+      if (!guarded.ok) return rejected(guarded, sql);
       let connectionString: string;
       try {
         connectionString = decryptSecret(source.encryptedUrl!);
@@ -401,17 +419,7 @@ function postgresRuntime(source: Source): DataSourceRuntime {
             sql: guarded.sql,
           };
         }
-        const err =
-          error instanceof ExecutionError
-            ? error
-            : new ExecutionError("query_error", String(error));
-        return {
-          ok: false,
-          kind: "failed",
-          code: err.code,
-          message: err.message,
-          sql: guarded.sql,
-        };
+        return failed(error, guarded.sql);
       }
     },
   };

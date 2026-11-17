@@ -1,18 +1,24 @@
 import { config } from "@/lib/config";
 import { CsvError, inferCsv, suggestQuestions } from "@/lib/data/csv-infer";
-import { loadDataset, newDatasetTableName } from "@/lib/data/csv-ingest";
-import { type CsvDetails, toPublicSource } from "@/lib/data/sources";
+import {
+  dropDataset,
+  loadDataset,
+  newDatasetTableName,
+} from "@/lib/data/csv-ingest";
+import {
+  type CsvDetails,
+  assertSourceQuota,
+  toPublicSource,
+} from "@/lib/data/sources";
 import { UserError, toUserError } from "@/lib/errors";
 import { errorResponse, ndjsonResponse } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
-import { postgresCooldownStore } from "@/lib/security/rate-limit";
+import { enforceCooldown } from "@/lib/security/rate-limit";
 import { assertSameOrigin, getIdentity } from "@/lib/security/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
-
-const MAX_SOURCES_PER_SESSION = 25;
 
 function decodeText(bytes: ArrayBuffer): string {
   try {
@@ -37,20 +43,17 @@ export async function POST(request: Request) {
         413,
       );
     }
-    const cooldown = await postgresCooldownStore.claim(
+    // Per IP as well as per session, so clearing cookies does not allow unlimited uploads.
+    await enforceCooldown(
+      `upload-ip:${identity.ipKey}`,
+      3,
+      "before uploading another file",
+    );
+    await enforceCooldown(
       `upload:${identity.sessionId}`,
       5,
+      "before uploading another file",
     );
-    if (!cooldown.ok) {
-      throw new UserError(
-        "rate_limited",
-        `Please wait ${cooldown.retryAfterSeconds}s before uploading another file.`,
-        429,
-        {
-          retryAfterSeconds: cooldown.retryAfterSeconds,
-        },
-      );
-    }
     const form = await request.formData();
     const entry = form.get("file");
     if (!(entry instanceof File))
@@ -67,15 +70,7 @@ export async function POST(request: Request) {
         413,
       );
     }
-    const count = await prisma.source.count({
-      where: { ownerId: identity.sessionId },
-    });
-    if (count >= MAX_SOURCES_PER_SESSION) {
-      throw new UserError(
-        "bad_request",
-        "You have too many data sources. Remove one before adding another.",
-      );
-    }
+    await assertSourceQuota(identity.sessionId);
   } catch (error) {
     return errorResponse(error);
   }
@@ -110,17 +105,23 @@ export async function POST(request: Request) {
         warnings: table.warnings,
         suggestions: suggestQuestions(table.columns),
       };
-      const source = await prisma.source.create({
-        data: {
-          ownerId: identity.sessionId,
-          kind: "csv",
-          name:
-            file.name.replace(/\.(csv|tsv|txt)$/i, "").slice(0, 120) ||
-            "Dataset",
-          tableName,
-          details: details as object,
-        },
-      });
+      const source = await prisma.source
+        .create({
+          data: {
+            ownerId: identity.sessionId,
+            kind: "csv",
+            name:
+              file.name.replace(/\.(csv|tsv|txt)$/i, "").slice(0, 120) ||
+              "Dataset",
+            tableName,
+            details: details as object,
+          },
+        })
+        .catch(async (error) => {
+          // Do not leave an unreachable dataset table behind.
+          await dropDataset(tableName).catch(() => undefined);
+          throw error;
+        });
       send({ type: "ready", source: toPublicSource(source) });
     },
     (error) => {

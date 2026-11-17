@@ -3,7 +3,7 @@ import { z } from "zod";
 import { testConnection } from "@/lib/data/postgres-source";
 import { UserError } from "@/lib/errors";
 import { errorResponse } from "@/lib/http";
-import { postgresCooldownStore } from "@/lib/security/rate-limit";
+import { enforceCooldown } from "@/lib/security/rate-limit";
 import { assertSameOrigin, getIdentity } from "@/lib/security/session";
 
 export const runtime = "nodejs";
@@ -25,20 +25,11 @@ export async function POST(request: Request) {
         "Enter a PostgreSQL connection string.",
       );
     // Connection tests open outbound sockets: throttle per IP to stop network probing.
-    const cooldown = await postgresCooldownStore.claim(
+    await enforceCooldown(
       `conn-test:${identity.ipKey}`,
       3,
+      "before testing again",
     );
-    if (!cooldown.ok) {
-      throw new UserError(
-        "rate_limited",
-        `Please wait ${cooldown.retryAfterSeconds}s before testing again.`,
-        429,
-        {
-          retryAfterSeconds: cooldown.retryAfterSeconds,
-        },
-      );
-    }
     const result = await testConnection(parsed.data.connectionString);
     return NextResponse.json({
       ok: true,
